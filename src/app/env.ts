@@ -5,6 +5,7 @@ const env = {
     projectName: String(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_NAME),
     apikey: String(process.env.APPWRITE_API_KEY),
   },
+  domain: String(process.env.NEXT_PUBLIC_PROJECT_DOMAIN),
 };
 
 export default env

@@ -1,6 +1,7 @@
 "use client"
-import { useRouter } from "next/router";
-import { useAuthStore } from "../../store/Auth";
+import { BackgroundBeams } from "@/components/ui/background-beams";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/src/store/Auth";
 import { useEffect } from "react";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -18,10 +19,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     }
     
     return (
-        <div>
-            <div>{children}</div>
-        </div>
-    )
+      <div className="relative flex min-h-screen flex-col items-center justify-center py-12">
+        <BackgroundBeams />
+        <div className="relative">{children}</div>
+      </div>
+    );
 };
 
 export default Layout;
