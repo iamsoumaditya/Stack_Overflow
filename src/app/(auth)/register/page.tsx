@@ -1,14 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { Label } from "@/src/components/ui/label";
+import { Input } from "@/src/components/ui/input";
+import { cn } from "@/src/lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
 import { useAuthStore } from "@/src/store/Auth";
 import Link from "next/link";
 import { account } from "@/src/models/client/config";
 import env from "@/src/app/env";
-import { LoaderOne } from "@/components/ui/loader";
+import { LoaderOne } from "@/src/components/ui/loader";
 import { OAuthProvider } from "appwrite";
 
 const BottomGradient = () => {

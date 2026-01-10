@@ -1,17 +1,16 @@
 "use client";
 
 import React from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { Label } from "@/src/components/ui/label";
+import { Input } from "@/src/components/ui/input";
+import { cn } from "@/src/lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
 import { useAuthStore } from "@/src/store/Auth";
 import Link from "next/link";
-import { LoaderOne } from "@/components/ui/loader";
+import { LoaderOne } from "@/src/components/ui/loader";
 import { account } from "@/src/models/client/config";
-import env from "@/src/app/env"
-import {OAuthProvider } from "appwrite";
-
+import env from "@/src/app/env";
+import { OAuthProvider } from "appwrite";
 
 const BottomGradient = () => {
   return (
@@ -71,15 +70,14 @@ export default function Login() {
   };
 
   const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    setIsLoading(true)
+    setIsLoading(true);
     e.preventDefault();
     account.createOAuth2Session(
-      OAuthProvider.Google, 
-      `${env.domain}/`, 
-      `${env.domain}/login` 
+      OAuthProvider.Google,
+      `${env.domain}/`,
+      `${env.domain}/login`
     );
-
-  }
+  };
 
   return (
     <div className="mx-auto w-full max-w-md  border border-solid border-neutral-200 dark:border-neutral-600 bg-white p-4 shadow-input dark:bg-black rounded-2xl md:p-8">
@@ -140,7 +138,8 @@ export default function Login() {
         <div className="my-8 h-px w-full bg-linear-to-r from-transparent via-neutral-300 to-transparent dark:via-neutral-700" />
 
         <div className="flex flex-col space-y-4">
-          <button onClick={handleGoogleLogin}
+          <button
+            onClick={handleGoogleLogin}
             className="group/btn relative flex h-10 w-full items-center justify-start space-x-2 rounded-md bg-gray-50 px-4 font-medium text-black shadow-input dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)] disabled:opacity-50 disabled:cursor-not-allowed"
             type="button"
             disabled={isLoading}

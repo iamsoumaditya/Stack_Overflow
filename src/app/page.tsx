@@ -1,65 +1,114 @@
-import Image from "next/image";
+"use client";
+import Header from "@/src/components/Header";
+import { InteractiveHoverButton } from "@/src/components/magicui/interactive-hover-button";
+import { useAuthStore } from "@/src/store/Auth";
+import Link from "next/link";
+import IconCloudCircle from "../components/IconCloud";
+import {
+  TopContributers,
+  TopContributersSkeleton,
+} from "../components/TopContributers";
+import axios from "axios";
+import { Models } from "node-appwrite";
+import { userPrefs } from "@/src/store/Auth";
+import { useEffect, useState } from "react";
+import {QuestionsCard,QuestionsCardSkeleton} from "@/src/components/QuestionsCard";
 
-export default function Home() {
+
+
+export default function Homepage() {
+  const { session } = useAuthStore();
+  const [topUser, setTopUser] = useState<Models.UserList<userPrefs> | null>(
+    null
+  );
+  const [latestQuestion, setLatestQuestion] = useState<any|null>(null);
+
+  useEffect(() => {
+    async function fetchUsers() {
+      const { data } = await axios.get("/api/user/top");
+      setTopUser(data);
+    }
+    fetchUsers();
+    async function fetchLatestQuestions() {
+      const { data } = await axios.get("/api/question");
+      console.log("Data",data)
+      setLatestQuestion(data);
+    }
+    fetchLatestQuestions();
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen max-w-screen">
+      <Header />
+      <div className="px-6 py-16 flex flex-col items-center">
+        <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-full mb-8">
+          <div className="flex-1">
+            <h1
+              className="text-6xl font-bold mb-4 text-gray-900 dark:text-white"
+              style={{ fontFamily: "Comic Sans MS, cursive" }}
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+              Queue Overflow
+            </h1>
+            <p
+              className="text-xl text-gray-600 dark:text-gray-300 mb-8"
+              style={{ fontFamily: "Comic Sans MS, cursive" }}
             >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              Resolve your all doubts with a great & helpful Community,
+              <br />
+              also don't hesitate to resolve community's doubts
+            </p>
+            <div className="flex gap-4">
+              {session && (
+                <InteractiveHoverButton>
+                  <Link href={"/question/ask"}>Ask Question</Link>
+                </InteractiveHoverButton>
+              )}
+              {!session && (
+                <>
+                  <InteractiveHoverButton>
+                    <Link href={"/register"}> Sign Up</Link>
+                  </InteractiveHoverButton>
+                  <InteractiveHoverButton>
+                    {" "}
+                    <Link href={"/login"}> Login</Link>
+                  </InteractiveHoverButton>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="w-64 h-64 rounded-full flex items-center justify-center">
+            <IconCloudCircle />
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/8 px-5 transition-colors hover:border-transparent hover:bg-black/4 dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      <div className="px-6 pb-16 w-full max-w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-1 rounded-2xl border-2 border-gray-300 dark:border-gray-700 p-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Top Contributors
+            </h2>
+            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+              {topUser && <TopContributers topUser={topUser} />}
+              {!topUser && <TopContributersSkeleton />}
+            </div>
+          </div>
+
+          <div className="lg:col-span-2 rounded-2xl border-2 border-gray-300 dark:border-gray-700 p-6">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              Latest Questions
+            </h2>
+            <div className="space-y-6">
+              {latestQuestion &&
+                latestQuestion.documents.map((question: any) => (
+                  <QuestionsCard key={question.$id} question={question} />
+                ))}
+              {!latestQuestion &&
+                <QuestionsCardSkeleton/>}
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
