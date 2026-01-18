@@ -12,6 +12,8 @@ import { MessageCircle, MessageSquare, Trash2, Send } from "lucide-react";
 import { comment } from "@uiw/react-md-editor";
 import ConfirmDelete from "@/src/components/ConfirmDelete";
 import { Question } from "../app/questions/[id]/[name]/page";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import { useTheme } from "next-themes";
 
 interface commentDoc extends Models.Document {
   $id: string;
@@ -73,6 +75,7 @@ function AddCommentContent({
   >;
 }) {
   const { user } = useAuthStore();
+  const { resolvedTheme } = useTheme();
   const [newComment, setNewComment] = React.useState("");
 
   const handleSubmit = async () => {
@@ -101,7 +104,17 @@ function AddCommentContent({
         ],
       }));
     } catch (error: any) {
-      window.alert(error?.message || "Error creating comment");
+      toast.error(error?.message || "Error creating comment", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
     }
   };
   return (
@@ -113,6 +126,13 @@ function AddCommentContent({
             placeholder="Add a comment..."
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                if (!newComment) return;
+                handleSubmit();
+              }
+            }}
             className="flex-1 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-rose-600 transition-all text-sm"
           />
           <button
@@ -122,7 +142,7 @@ function AddCommentContent({
             <Send className="w-4 h-4" />
           </button>
         </div>
-      )}{" "}
+      )}
     </>
   );
 }
@@ -137,6 +157,7 @@ function CommentSection({
   >;
 }) {
   const { user } = useAuthStore();
+  const { resolvedTheme } = useTheme();
   const deleteComment = async (commentId: string) => {
     try {
       await databases.deleteDocument(db, commentCollection, commentId);
@@ -148,7 +169,17 @@ function CommentSection({
         ),
       }));
     } catch (error: any) {
-      window.alert(error?.message || "Error deleting comment");
+      toast.error(error?.message || "Error deleting comment", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
     }
   };
   return (

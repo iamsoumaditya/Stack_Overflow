@@ -99,7 +99,7 @@ export function QuestionsCard({
   );
 }
 
-export function QuestionsCardSkeleton({length=5}:{length?:number}) {
+export function QuestionsCardSkeleton({ length = 5 }: { length?: number }) {
   const placeholders = Array.from({ length: length });
 
   return (
@@ -139,11 +139,8 @@ export function QuestionsCardSkeleton({length=5}:{length?:number}) {
 }
 
 export function QuestionsProfileCard({ question }: { question: Question }) {
-
   return (
-    <div
-      className="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-700 transition-all duration-200 cursor-pointer"
-    >
+    <div className="p-6 rounded-2xl border border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-700 transition-all duration-200 cursor-pointer">
       <Link href={`/questions/${question.$id}/${slugify(question.title)}`}>
         <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2 hover:text-rose-600 dark:hover:text-rose-400">
           {question.title}
@@ -200,7 +197,7 @@ export function QuestionsProfileCard({ question }: { question: Question }) {
           className="text-gray-500 dark:text-gray-500 text-xs"
           suppressHydrationWarning
         >
-         {convertDateToRelativeTime(new Date(question.$updatedAt))}
+          {convertDateToRelativeTime(new Date(question.$updatedAt))}
         </div>
       </div>
     </div>

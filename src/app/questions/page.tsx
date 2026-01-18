@@ -11,8 +11,12 @@ import {
 } from "@/src/components/QuestionsCard";
 import { Button } from "@/src/components/ui/Button";
 import {ShimmerButton} from "@/src/components/magicui/shimmer-button";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import { useTheme } from "next-themes";
+  
 
 export default function AllQuestionsPage() {
+  const { resolvedTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const { session } = useAuthStore();
@@ -39,6 +43,19 @@ export default function AllQuestionsPage() {
     <div className="min-h-screen w-full max-w-full px-6 py-8">
       <Header />
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 my-8">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={resolvedTheme}
+          transition={Bounce}
+        />
         <div className="relative flex-1 w-full md:max-w-2xl">
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
           <input
@@ -53,20 +70,24 @@ export default function AllQuestionsPage() {
           />
         </div>
 
-        {session && <Link href="/questions/ask">
-          <ShimmerButton className="shadow-2xl">
-            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-              Ask a question
-            </span>
-          </ShimmerButton>
-        </Link>}
-        {!session && <Link href="/login">
-          <ShimmerButton className="shadow-2xl">
-            <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
-              Ask a question
-            </span>
-          </ShimmerButton>
-        </Link>}
+        {session && (
+          <Link href="/questions/ask">
+            <ShimmerButton className="shadow-2xl">
+              <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+                Ask a question
+              </span>
+            </ShimmerButton>
+          </Link>
+        )}
+        {!session && (
+          <Link href="/login">
+            <ShimmerButton className="shadow-2xl">
+              <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
+                Ask a question
+              </span>
+            </ShimmerButton>
+          </Link>
+        )}
       </div>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">

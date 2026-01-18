@@ -18,6 +18,7 @@ import confetti from "canvas-confetti";
 import slugify from "@/src/utils/slugify";
 import ConfirmDelete from "@/src/components/ConfirmDelete";
 import { Question } from "../app/questions/[id]/[name]/page";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 
 export interface IAnswer extends Models.Document {
   questionId: string;
@@ -259,7 +260,17 @@ export default function Answer({
 
       await loadConfetti();
     } catch (error: any) {
-      window.alert(error?.message || "Error creating answer");
+      toast.error(error?.message || "Error creating answer", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
     } finally {
       setLoading(false);
     }
@@ -275,7 +286,17 @@ export default function Answer({
         data: { answerId },
       });
     } catch (error: any) {
-      window.alert(error?.message || "Error deleting answer");
+      toast.error(error?.message || "Error creating answer", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -348,11 +369,13 @@ export default function Answer({
   );
 }
 
-export function ProfileAnswerCard({answer}:{answer: IAnswer}) {
+export function ProfileAnswerCard({ answer }: { answer: IAnswer }) {
   return (
     <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-700 transition-all cursor-pointer">
       <div className="flex items-start justify-between gap-3 mb-2">
-        <Link href={`/questions/${answer.questionId}/${slugify(answer.question?.title!)}`}>
+        <Link
+          href={`/questions/${answer.questionId}/${slugify(answer.question?.title!)}`}
+        >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-rose-600 dark:hover:text-rose-400">
             {answer.question?.title}
           </h3>

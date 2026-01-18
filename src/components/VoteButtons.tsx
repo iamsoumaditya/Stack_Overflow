@@ -11,6 +11,9 @@ import axios from "axios";
 import convertDateToRelativeTime from "@/src/utils/relativeTime";
 import slugify from "@/src/utils/slugify";
 import Link from "next/link";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import { useTheme } from "next-themes";
+
 
 export interface Vote extends Models.Document {
   type: "question" | "answer";
@@ -33,6 +36,7 @@ export default function VoteButtons({
 }) {
   const { user } = useAuthStore();
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
   const [voted, setVoted] = useState<"up" | "down" | null>(null);
   const [totalVote, setTotalVote] = useState<number>(0);
   const [isVoting, setIsVoting] = useState(false);
@@ -107,8 +111,19 @@ export default function VoteButtons({
         typeId,
       });
       setTotalVote(res.data.votes.score); // sync with server
-    } catch (err) {
+    } catch (err:any) {
       console.error(err);
+      toast.error(err?.message || "Error While Voting", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
       setTotalVote((prev) => prev - delta);
       setVoted(voted); // rollback to old state
     } finally {

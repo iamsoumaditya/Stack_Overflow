@@ -1,7 +1,7 @@
 "use client";
 import { account } from "@/src/models/client/config";
 import React, { useEffect, useState } from "react";
-import { Edit, Clock, Calendar,Eye,EyeOff } from "lucide-react";
+import { Edit, Clock, Calendar, Eye, EyeOff, BadgeCheck } from "lucide-react";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import Header from "@/src/components/Header";
@@ -24,11 +24,15 @@ import {
   QuestionsCardSkeleton,
   QuestionsProfileCard,
 } from "@/src/components/QuestionsCard";
+import { NumberTicker } from "@/src/components/magicui/number-ticker";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import { useTheme } from "next-themes";
+
 
 const StatCard = ({ number, label }: { number: number; label: string }) => (
   <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 text-center hover:border-rose-300 dark:hover:border-rose-700 transition-all">
     <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-      {number}
+      <NumberTicker value={number}/>
     </div>
     <div className="text-gray-600 dark:text-gray-400 text-sm">{label}</div>
   </div>
@@ -36,6 +40,7 @@ const StatCard = ({ number, label }: { number: number; label: string }) => (
 
 export default function UserProfilePage() {
   const param = useParams();
+    const { resolvedTheme } = useTheme();
   const [activeTab, setActiveTab] = useState<
     "summary" | "questions" | "answers" | "votes" | "comments"
   >("summary");
@@ -94,8 +99,30 @@ export default function UserProfilePage() {
       });
       try {
         await account.updateName(newName);
+        toast.success("Name updated successfully!!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
       } catch (error) {
-        console.log(error);
+        console.log(error)
+        toast.error("Name updation failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
 
         setAuthor((prev) => {
           if (!prev) return prev;
@@ -110,6 +137,17 @@ export default function UserProfilePage() {
     }else if (editMode === "email") {
       try {
         await account.updateEmail(newEmail, password);
+        toast.success("Email updated successfully!!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
         setAuthor((prev) => {
           if (!prev) return prev;
           return {
@@ -119,14 +157,47 @@ export default function UserProfilePage() {
         });
       } catch (error) {
         console.log(error);
+        toast.error("Email updation failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
       } finally {
         setIsEditing(false);
       }
     }else if (editMode === "password") {
       try {
         await account.updatePassword(newPassword, oldPassword);
+        toast.success("Password updated successfully!!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
       } catch (error) {
         console.log(error)
+        toast.error("Password updation failed", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
       } finally {
         setIsEditing(false);
       }
@@ -139,6 +210,19 @@ export default function UserProfilePage() {
       <div className="max-w-6xl mx-auto">
         <Header />
         <div className="flex items-start gap-6 mb-8">
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme={resolvedTheme}
+            transition={Bounce}
+          />
           <div className="w-32 h-32 rounded-lg bg-linear-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white text-5xl font-bold shrink-0">
             {author &&
               author.name
@@ -151,9 +235,23 @@ export default function UserProfilePage() {
             <div className="flex items-start justify-between mb-3">
               <div>
                 {author && (
-                  <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-                    {author.name}
-                  </h1>
+                  <>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-3">
+                      <span>{author.name}</span>
+                      {author.labels.length === 1 && (
+                        <>
+                          <BadgeCheck
+                            size={20}
+                            color="white"
+                            style={{ fill: "blue" }}
+                          />
+                          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                            {author.labels[0]}
+                          </span>
+                        </>
+                      )}
+                    </h1>
+                  </>
                 )}
                 {!author && (
                   <div className="h-4 w-48 mb-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
@@ -237,7 +335,7 @@ export default function UserProfilePage() {
           <button
             onClick={() => setActiveTab("comments")}
             className={`pb-3 px-2 text-sm font-medium transition-all ${
-              activeTab === "votes"
+              activeTab === "comments"
                 ? "text-rose-600 dark:text-rose-400 border-b-2 border-rose-600 dark:border-rose-400"
                 : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200"
             }`}
@@ -457,9 +555,11 @@ export default function UserProfilePage() {
 
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Recent Questions
-                  </h2>
+                  {questions && questions.total !== 0 && (
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                      Recent Questions
+                    </h2>
+                  )}
                   <div className="space-y-3">
                     {questions &&
                       questions.documents
@@ -472,9 +572,11 @@ export default function UserProfilePage() {
                 </div>
 
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Recent Answers
-                  </h2>
+                  {answers && answers.total !== 0 && (
+                    <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                      Recent Answers
+                    </h2>
+                  )}
                   <div className="space-y-3">
                     {answers &&
                       answers.documents

@@ -1,6 +1,7 @@
-import { answerCollection, db } from "@/src/models/name";
+import { answerCollection, commentCollection, db, voteCollection } from "@/src/models/name";
 import { databases, users } from "@/src/models/server/config";
 import { userPrefs } from "@/src/store/Auth";
+import { Query } from "appwrite";
 import { NextRequest, NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 
@@ -40,11 +41,42 @@ export async function DELETE(request: NextRequest) {
 
     const answer = await databases.getDocument(db, answerCollection, answerId);
 
+    const answerComments = await databases.listDocuments(
+      db,
+      commentCollection,
+      [Query.equal("type", "answer"), Query.equal("typeId", answer.$id)],
+    );
+
+    for (const c of answerComments.documents) {
+      await databases.deleteDocument(db, commentCollection, c.$id);
+    }
+
+    const answerVotes = await databases.listDocuments(db, voteCollection, [
+      Query.equal("type", "answer"),
+      Query.equal("typeId", answer.$id),
+    ]);
+    
+    let delta = 0;
+    for (const v of answerVotes.documents) {
+
+      if (v.voteStatus === "upvoted") {
+        delta--;
+      } else if (v.voteStatus === "downvoted") {
+        delta++;
+      }
+
+      await databases.deleteDocument(db, voteCollection, v.$id);
+    }
+    const prefsVotes = await users.getPrefs<userPrefs>(answer.authorId);
+    await users.updatePrefs(answer.authorId, {
+      reputation: Number(prefsVotes.reputation) + delta,
+    });
+
     if (answer.isAccepted) {
       const prefs = await users.getPrefs<userPrefs>(answer.authorId);
 
       await users.updatePrefs(answer.authorId, {
-        reputation: Number(prefs.reputation) - 5,
+        reputation: Number(prefs.reputation) - 6,
       });
     }
 

@@ -22,8 +22,7 @@ import Answer, { IAnswer } from "@/src/components/Answers";
 import { comment } from "@/src/components/Comments";
 import { Models } from "appwrite";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { databases } from "@/src/models/client/config";
-import { db, questionCollection } from "@/src/models/name";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import ConfirmDelete from "@/src/components/ConfirmDelete";
 
 export interface Question extends Models.Document {
@@ -38,8 +37,8 @@ export interface Question extends Models.Document {
   totalAnswers: number;
   author: {
     name: string;
-    $id:string
-  }
+    $id: string;
+  };
 }
 
 interface Data {
@@ -61,7 +60,6 @@ export default function QuestionDetailPage() {
   const { resolvedTheme } = useTheme();
   const router = useRouter();
   const param = useParams();
-  const pathname= usePathname();
   const [data, setData] = useState<Data>();
   const [comments, setComments] = React.useState<Models.DocumentList<comment>>({
     total: 0,
@@ -88,14 +86,33 @@ export default function QuestionDetailPage() {
     }
   }, [data]);
 
-
   const deleteQuestion = async () => {
     try {
-      await databases.deleteDocument(db, questionCollection, question?.$id!);
-
       router.push("/questions");
+      await axios.delete(`/api/question/${question?.$id}`);
+      toast.success("Question deleted successfully!!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
     } catch (error: any) {
-      window.alert(error?.message || "Something went wrong");
+      toast.error(error?.message || "Something went wrong", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
     }
   };
 
@@ -104,6 +121,19 @@ export default function QuestionDetailPage() {
       <div className="max-w-full mx-auto">
         <Header />
         <div className="flex items-start justify-between gap-4 my-6">
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme={resolvedTheme}
+            transition={Bounce}
+          />
           <div className="flex-1">
             {question && (
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
@@ -176,7 +206,6 @@ export default function QuestionDetailPage() {
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </ConfirmDelete>
-                
               </>
             )}
           </div>
@@ -185,15 +214,17 @@ export default function QuestionDetailPage() {
           <div className="flex-1">
             <div
               suppressHydrationWarning
-              data-color-mode={resolvedTheme}
+              data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
               className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4"
             >
-              {question && <MarkdownPreview source={question.content} />}
+              {question && (
+                <MarkdownPreview
+                  data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
+                  source={question.content}
+                />
+              )}
               {!question && (
-                <div suppressHydrationWarning
-                  data-color-mode={resolvedTheme}
-                  className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4"
-                >
+                <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4">
                   <div className="space-y-3 animate-pulse">
                     <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700 rounded"></div>
                     <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
@@ -207,7 +238,7 @@ export default function QuestionDetailPage() {
               <img
                 src={storage.getFileView(
                   questionAttachmentBucket,
-                  question.attachmentId
+                  question.attachmentId,
                 )}
                 alt={data?.question.title}
                 className="rounded-lg mb-4"
@@ -247,7 +278,7 @@ export default function QuestionDetailPage() {
                   {data && (
                     <Link
                       href={`/users/${data.author.$id}/${slugify(
-                        data.author.name
+                        data.author.name,
                       )}`}
                     >
                       <p className="text-rose-600 dark:text-rose-400 font-medium hover:text-rose-700 dark:hover:text-rose-300 cursor-pointer">

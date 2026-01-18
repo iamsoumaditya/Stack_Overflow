@@ -1,9 +1,0 @@
-{
-  "name": "cascade-delete",
-  "version": "1.0.0",
-  "main": "src/index.js",
-  "dependencies": {
-    "appwrite": "^21.5.0",
-    "node-appwrite": "^11.1.1"
-  }
-}
