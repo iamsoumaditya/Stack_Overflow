@@ -2,8 +2,8 @@ import { Client, Databases, Query } from "node-appwrite";
 
 export default async function (req, res) {
   const client = new Client()
-    .setEndpoint(process.env.APPWRITE_ENDPOINT)
-    .setProject(process.env.APPWRITE_PROJECT_ID)
+    .setEndpoint(process.env.NEXT_PUBLIC_APPWRITE_HOST_URL)
+    .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID)
     .setKey(process.env.APPWRITE_API_KEY);
 
   const databases = new Databases(client);
