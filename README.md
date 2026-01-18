@@ -1,36 +1,109 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 Queue Underflow – Ask, Resolve & Grow Together
 
-## Getting Started
+A **modern Q&A platform** inspired by Stack Overflow, built using **Next.js** and **Appwrite**, where users can ask doubts, resolve others’ questions, earn reputation, and build a high-quality developer profile.
 
-First, run the development server:
+> Designed, built, and maintained by **Soumaditya Roy**  
+> Open for contributions – bring your favorite feature to life ✨
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🌟 Overview
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+**Queue Underflow** is a community-driven knowledge-sharing platform that focuses on:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Asking meaningful questions  
+- Providing quality answers  
+- Earning reputation through contributions  
+- Building a strong public developer profile  
+- Fast, relevant, and high-quality search  
 
-## Learn More
+The platform emphasizes **clean UI**, **fair reputation mechanics**, and **developer-friendly architecture**.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ✨ Key Features
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### ❓ Questions & Answers
+- Ask questions with rich content
+- Answer others’ questions
+- Edit & improve answers
+- Mark accepted answers
 
-## Deploy on Vercel
+### 🗳️ Voting System
+- Upvote / Downvote questions & answers
+- Reputation changes based on votes
+- Transparent vote history
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### ⭐ Reputation System
+- Earn reputation by:
+  - Getting upvotes
+  - Accepted answers
+  - Helpful comments
+- Lose reputation for downvotes
+- Reputation visible on user profiles
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### 👤 User Profiles
+- Public user profiles
+- Activity summary:
+  - Questions
+  - Answers
+  - Votes
+  - Comments
+- Join date & last activity
+- Editable profile details
+
+### 💬 Comments
+- Comment on questions and answers
+- Threaded, lightweight discussion
+
+### 🔍 Powerful Search
+- Search by:
+  - Keywords
+  - Questions
+  - Tags (planned)
+- Optimized for fast results
+
+### 🎨 Modern UI/UX
+- Responsive design
+- Dark / Light mode
+- Clean and minimal interface
+- Skeleton loaders & smooth transitions
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js**
+- **TypeScript**
+- **Tailwind CSS**
+- **Lucide Icons**
+
+### Backend & Services
+- **Appwrite**
+  - Authentication
+  - Database
+  - User management
+- **REST APIs**
+- **Axios**
+
+---
+
+## 📂 Project Structure (Simplified)
+src/  
+├── app/  
+│ ├── questions/  
+│ ├── profile/  
+│ ├── api/  
+│ └── layout.tsx  
+│
+├── components/  
+│ ├── QuestionsCard/  
+│ ├── Answers/  
+│ ├── Comments/  
+│ ├── VoteButtons/  
+│ └── Header/  
+│  
+├── models/  
+├── store/        
+└── utils/
