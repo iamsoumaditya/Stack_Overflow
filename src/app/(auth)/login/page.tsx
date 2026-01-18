@@ -105,7 +105,7 @@ export default function Login() {
             className="text-black dark:text-white"
             id="email"
             name="email"
-            placeholder="projectmayhem@fc.com"
+            placeholder="soumaditya@roy.dev"
             type="email"
           />
         </LabelInputContainer>
