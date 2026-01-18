@@ -93,8 +93,11 @@ The platform emphasizes **clean UI**, **fair reputation mechanics**, and **devel
 src/  
 ├── app/  
 │ ├── questions/  
+│ ├── (auth)/  
+│ ├── about/  
 │ ├── profile/  
 │ ├── api/  
+│ ├── page.tsx/  
 │ └── layout.tsx  
 │
 ├── components/  
@@ -102,8 +105,108 @@ src/
 │ ├── Answers/  
 │ ├── Comments/  
 │ ├── VoteButtons/  
+│ ├── ........ 
 │ └── Header/  
 │  
 ├── models/  
 ├── store/        
 └── utils/
+
+---
+
+## ⚙️ Setup & Installation
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/iamsoumaditya/Stack_Overflow
+cd Stack_Overflow
+```
+### 2️⃣ Install Dependencies
+
+```bash
+npm install
+```
+### 3️⃣ Configure Appwrite
+
+```bash  
+.env
+NEXT_PUBLIC_APPWRITE_HOST_URL=your-appwrite-host-url
+NEXT_PUBLIC_APPWRITE_PROJECT_ID=your-appwrite-project-id
+NEXT_PUBLIC_APPWRITE_PROJECT_NAME =your-appwrite-project-name
+APPWRITE_API_KEY=your-appwrite-api-key
+NEXT_PUBLIC_PROJECT_DOMAIN=http://localhost:3000 # for dev server
+
+```
+### 4️⃣ Run the Development Server
+
+```bash  
+npm run dev
+```
+
+### 4️⃣ App will be live at
+
+```bash  
+http://localhost:3000
+```
+
+
+---
+
+## 🤝 Contributing
+
+We welcome contributors 🚀  
+If you have a feature idea, UI improvement, or performance optimization — jump in!
+
+### How to Contribute
+
+1. **Fork the repository**
+2. **Create a new branch**
+
+   ```bash
+   git checkout -b feature/your-feature-name
+
+3. **Commit your changes**
+4. **Push to your fork**
+4. **Open a Pull Request**
+
+
+---
+
+## 💡 Feature Ideas You Can Add
+
+- AI-assisted answer suggestions
+- Notifications system
+- Bookmark questions
+- Analytics dashboard
+
+---
+
+## 🧠 Project Philosophy
+
+``` typescript
+    “Quality answers matter more than quantity.”
+```
+
+- Featured Queue focuses on:
+- Encouraging helpful contributions
+- Rewarding knowledge sharing
+- Building a respectful tech community
+
+---
+
+## 👨‍💻 Author
+
+**Soumaditya Roy**  
+Developer
+Passionate about building scalable, meaningful tech  
+
+> If you like this project, ⭐ star the repo and start contributing!
+
+---
+## 🚀 Let’s Build Together
+
+Have an idea?  
+Found a bug?  
+Want to improve performance or UI?
+
+**Open an issue or submit a PR — your contribution matters. 💙**
