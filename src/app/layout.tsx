@@ -5,6 +5,7 @@ import { AnimatedThemeToggler } from "@/src/components/magicui/animated-theme-to
 import { BackgroundBeams } from "@/src/components/ui/background-beams";
 import Footer from "@/src/components/Footer";
 import { ThemeProvider } from "next-themes";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,6 +51,7 @@ export default function RootLayout({
             <Footer />
           </div>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
