@@ -6,13 +6,50 @@ import {
   voteCollection,
 } from "@/src/models/name";
 import { Query } from "node-appwrite";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
-  const questions = await databases.listDocuments(db, questionCollection, [
-    Query.limit(5),
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+
+  const query = searchParams.get("query") ?? "";
+  const page = Number(searchParams.get("page") ?? 1);
+  const limit = Number(searchParams.get("limit") ?? 5);
+
+  const offset = (page - 1) * limit;
+  const queries: string[] = [
+    Query.limit(limit),
+    Query.offset(offset),
     Query.orderDesc("$createdAt"),
-  ]);
+  ];
+  
+  let questions;
+
+  if (query.trim() !== "") {
+    const byTitle = await databases.listDocuments(db, questionCollection, [
+      ...queries,
+      Query.search("title", query),
+    ]);
+
+    const byContent = await databases.listDocuments(db, questionCollection, [
+      ...queries,
+      Query.search("content", query),
+    ]);
+
+    const byTags = await databases.listDocuments(db, questionCollection, [
+      ...queries,
+      Query.equal("tags", [query]),
+    ]);
+
+    const merged = [
+      ...byTitle.documents,
+      ...byContent.documents,
+      ...byTags.documents,
+    ].filter((doc, i, arr) => arr.findIndex((d) => d.$id === doc.$id) === i);
+
+    questions = { documents: merged, total: merged.length };
+  } else {
+    questions = await databases.listDocuments(db, questionCollection, queries);
+  }
 
   questions.documents = await Promise.all(
     questions.documents.map(async (ques) => {
@@ -46,7 +83,14 @@ export async function GET() {
         author: author,
       };
     })
-    );
-    
-    return NextResponse.json(questions)
+  );
+
+   questions.documents.sort(
+     (a, b) => (b.totalAnswers ?? 0) - (a.totalAnswers ?? 0),
+   );
+   questions.documents.sort(
+    (a, b) => (b.totalVotes ?? 0) - (a.totalVotes ?? 0),
+  );
+
+  return NextResponse.json(questions);
 }

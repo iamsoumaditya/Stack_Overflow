@@ -35,6 +35,9 @@ export default async function createAnswerCollection() {
       50,
       true
     ),
+    databases.createBooleanAttribute(
+      db,answerCollection,"isAccepted",false,false
+    )
   ]);
   console.log("Answers Atributes created");
 }

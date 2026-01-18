@@ -6,7 +6,6 @@ import { BackgroundBeams } from "@/src/components/ui/background-beams";
 import Footer from "@/src/components/Footer";
 import { ThemeProvider } from "next-themes";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,7 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <div className="relative min-h-screen">
             <div className="fixed inset-0 -z-10">
               <BackgroundBeams />

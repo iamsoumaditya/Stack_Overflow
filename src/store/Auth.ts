@@ -44,7 +44,8 @@ export const useAuthStore = create<IAuthStore>()(
             async verifySession() {
                 try {
                     const session = await account.getSession("current")
-                    set({session})
+                    const user = await account.get<userPrefs>();
+                    set({session,user})
                 } catch (error) {
                     console.log(error)
                 }

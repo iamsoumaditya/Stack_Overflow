@@ -31,14 +31,13 @@ export default function Homepage() {
     fetchUsers();
     async function fetchLatestQuestions() {
       const { data } = await axios.get("/api/question");
-      console.log("Data",data)
       setLatestQuestion(data);
     }
     fetchLatestQuestions();
   }, []);
 
   return (
-    <div className="min-h-screen max-w-screen">
+    <div className="min-h-screen w-full overflow-x-hidden">
       <Header />
       <div className="px-6 py-16 flex flex-col items-center">
         <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-full mb-8">
@@ -59,19 +58,18 @@ export default function Homepage() {
             </p>
             <div className="flex gap-4">
               {session && (
-                <InteractiveHoverButton>
-                  <Link href={"/question/ask"}>Ask Question</Link>
-                </InteractiveHoverButton>
+                <Link href={"/questions/ask"}>
+                  <InteractiveHoverButton>Ask Question</InteractiveHoverButton>
+                </Link>
               )}
               {!session && (
                 <>
-                  <InteractiveHoverButton>
-                    <Link href={"/register"}> Sign Up</Link>
-                  </InteractiveHoverButton>
-                  <InteractiveHoverButton>
-                    {" "}
-                    <Link href={"/login"}> Login</Link>
-                  </InteractiveHoverButton>
+                  <Link href={"/register"}>
+                    <InteractiveHoverButton>Sign Up</InteractiveHoverButton>
+                  </Link>{" "}
+                  <Link href={"/login"}>
+                    <InteractiveHoverButton> Login</InteractiveHoverButton>
+                  </Link>
                 </>
               )}
             </div>
@@ -103,8 +101,7 @@ export default function Homepage() {
                 latestQuestion.documents.map((question: any) => (
                   <QuestionsCard key={question.$id} question={question} />
                 ))}
-              {!latestQuestion &&
-                <QuestionsCardSkeleton/>}
+              {!latestQuestion && <QuestionsCardSkeleton />}
             </div>
           </div>
         </div>

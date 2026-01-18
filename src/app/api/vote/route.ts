@@ -10,6 +10,13 @@ import { Query } from "node-appwrite";
 import { userPrefs } from "@/src/store/Auth";
 import { ID } from "node-appwrite";
 
+async function adjustReputation(authorId: string, delta: number) {
+  const prefs = await users.getPrefs<userPrefs>(authorId);
+  await users.updatePrefs<userPrefs>(authorId, {
+    reputation: Number(prefs.reputation) + delta,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { votedById, voteStatus, type, typeId } = await request.json();
@@ -26,10 +33,6 @@ export async function POST(request: NextRequest) {
       typeId
     );
 
-    const authorPrefs = await users.getPrefs<userPrefs>(
-      QuestionOrAnswer.authorId
-    );
-
     if (existing.total > 0 && existing.documents[0].voteStatus === voteStatus) {
       await databases.deleteDocument(
         db,
@@ -37,27 +40,22 @@ export async function POST(request: NextRequest) {
         existing.documents[0].$id
       );
 
-      await users.updatePrefs<userPrefs>(QuestionOrAnswer.authorId, {
-        reputation:
-          voteStatus === "upvoted"
-            ? Number(authorPrefs.reputation) - 1
-            : Number(authorPrefs.reputation) + 1,
-      });
+      await adjustReputation(
+        QuestionOrAnswer.authorId,
+        voteStatus === "upvoted" ? -1 : +1
+      );
     } else {
       if (existing.total > 0) {
+        await adjustReputation(
+          QuestionOrAnswer.authorId,
+          existing.documents[0].voteStatus === "upvoted" ? -1 : +1
+        );
+
         await databases.deleteDocument(
           db,
           voteCollection,
           existing.documents[0].$id
         );
-
-        await users.updatePrefs<userPrefs>(QuestionOrAnswer.authorId, {
-          reputation:
-            existing.documents[0].voteStatus === "upvoted"
-              ? Number(authorPrefs.reputation) - 1
-              : Number(authorPrefs.reputation) + 1,
-        });
-
       }
 
       await databases.createDocument(db, voteCollection, ID.unique(), {
@@ -67,12 +65,10 @@ export async function POST(request: NextRequest) {
         votedById,
       });
 
-      await users.updatePrefs<userPrefs>(QuestionOrAnswer.authorId, {
-        reputation:
-          voteStatus === "upvoted"
-            ? Number(authorPrefs.reputation) + 1
-            : Number(authorPrefs.reputation) - 1,
-      });
+      await adjustReputation(
+        QuestionOrAnswer.authorId,
+        voteStatus === "upvoted" ? +1 : -1
+      );
     }
 
     const [upvotes, downvotes] = await Promise.all([
@@ -90,10 +86,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        data: {
-          upvotes : upvotes.total,
+        votes: {
+          upvotes: upvotes.total,
           downvotes: downvotes.total,
-          score: upvotes.total-downvotes.total
+          score: upvotes.total - downvotes.total,
         },
         message: "Vote fetched successfully",
       },

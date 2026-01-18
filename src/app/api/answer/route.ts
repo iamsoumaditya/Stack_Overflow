@@ -21,7 +21,9 @@ export async function POST(request: NextRequest) {
 
     //increase author reputation
     const prefs = await users.getPrefs<userPrefs>(authorId);
-    await users.updatePrefs(authorId, { reputation: Number(prefs.reputation) + 1 });
+    await users.updatePrefs(authorId, {
+      reputation: Number(prefs.reputation) + 1,
+    });
 
     return NextResponse.json(response, { status: 201 });
   } catch (error: any) {
@@ -34,9 +36,17 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-      const { answerId } = await request.json();
+    const { answerId } = await request.json();
 
     const answer = await databases.getDocument(db, answerCollection, answerId);
+
+    if (answer.isAccepted) {
+      const prefs = await users.getPrefs<userPrefs>(answer.authorId);
+
+      await users.updatePrefs(answer.authorId, {
+        reputation: Number(prefs.reputation) - 5,
+      });
+    }
 
     const response = await databases.deleteDocument(
       db,
@@ -45,7 +55,9 @@ export async function DELETE(request: NextRequest) {
     );
 
     const prefs = await users.getPrefs<userPrefs>(answer.authorId);
-    await users.updatePrefs(answer.authorId, { reputation: Number(prefs.reputation) - 1 });
+    await users.updatePrefs(answer.authorId, {
+      reputation: Number(prefs.reputation) - 1,
+    });
 
     return NextResponse.json(
       {
@@ -56,6 +68,41 @@ export async function DELETE(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Error occurred while deleting answers" },
+      { status: error?.status || error?.code || 500 }
+    );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const { answerId } = await request.json();
+
+    const currentAnswer = await databases.getDocument(
+      db,
+      answerCollection,
+      answerId
+    );
+
+    const prefs = await users.getPrefs<userPrefs>(currentAnswer.authorId);
+
+    if (currentAnswer.isAccepted) {
+      await users.updatePrefs(currentAnswer.authorId, {
+        reputation: Number(prefs.reputation) - 5,
+      });
+    } else {
+      await users.updatePrefs(currentAnswer.authorId, {
+        reputation: Number(prefs.reputation) + 5,
+      });
+    }
+
+    await databases.updateDocument(db, answerCollection, answerId, {
+      isAccepted: !currentAnswer.isAccepted,
+    });
+
+    return NextResponse.json({ status: 200 });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error?.message || "Error occurred while Accepting answers" },
       { status: error?.status || error?.code || 500 }
     );
   }

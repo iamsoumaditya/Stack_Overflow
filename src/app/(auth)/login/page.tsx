@@ -11,6 +11,7 @@ import { LoaderOne } from "@/src/components/ui/loader";
 import { account } from "@/src/models/client/config";
 import env from "@/src/app/env";
 import { OAuthProvider } from "appwrite";
+import { Eye, EyeOff } from "lucide-react";
 
 const BottomGradient = () => {
   return (
@@ -39,7 +40,7 @@ export default function Login() {
   const { login } = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
-
+  const [showpassword, setShowPassword] = React.useState(false);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -110,13 +111,26 @@ export default function Login() {
         </LabelInputContainer>
         <LabelInputContainer className="mb-4">
           <Label htmlFor="password">Password</Label>
-          <Input
-            className="text-black dark:text-white"
-            id="password"
-            name="password"
-            placeholder="••••••••"
-            type="password"
-          />
+          <div className="relative w-full">
+            <Input
+              type={showpassword ? "text" : "password"}
+              className="text-black dark:text-white"
+              id="password"
+              name="password"
+              placeholder="••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showpassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
+            >
+              {showpassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
+          </div>
         </LabelInputContainer>
 
         {!isLoading && (

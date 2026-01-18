@@ -4,8 +4,10 @@ import { userPrefs } from "@/src/store/Auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-  const topUser: Models.UserList<userPrefs> = await users.list<userPrefs>([
-    Query.limit(10),
-  ]);
-  return NextResponse.json(topUser);
+  const allUsers = await users.list<userPrefs>();
+  const sorted = allUsers.users
+    .sort((a, b) => (b.prefs.reputation ?? 0) - (a.prefs.reputation ?? 0))
+    .slice(0, 10);
+
+  return NextResponse.json({ users: sorted });
 }

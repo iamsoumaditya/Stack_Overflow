@@ -1,4 +1,4 @@
-export const db = "stackoverflow"
+export const db = "queue-underflow"
 export const questionCollection = "questions"
 export const answerCollection = "answers"
 export const commentCollection = "comments"
