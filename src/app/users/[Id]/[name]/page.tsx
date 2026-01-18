@@ -110,9 +110,9 @@ export default function UserProfilePage() {
           theme: resolvedTheme === "dark" ? "dark" : "light",
           transition: Bounce,
         });
-      } catch (error) {
+      } catch (error:any) {
         console.log(error)
-        toast.error("Name updation failed", {
+        toast.error(error.message ||"Name updation failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -155,9 +155,9 @@ export default function UserProfilePage() {
             email: newEmail,
           };
         });
-      } catch (error) {
+      } catch (error:any) {
         console.log(error);
-        toast.error("Email updation failed", {
+        toast.error(error.message ||"Email updation failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -185,9 +185,9 @@ export default function UserProfilePage() {
           theme: resolvedTheme === "dark" ? "dark" : "light",
           transition: Bounce,
         });
-      } catch (error) {
+      } catch (error:any) {
         console.log(error)
-        toast.error("Password updation failed", {
+        toast.error(error.message || "Password updation failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

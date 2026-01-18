@@ -10,10 +10,9 @@ import {
   QuestionsCardSkeleton,
 } from "@/src/components/QuestionsCard";
 import { Button } from "@/src/components/ui/Button";
-import {ShimmerButton} from "@/src/components/magicui/shimmer-button";
+import { ShimmerButton } from "@/src/components/magicui/shimmer-button";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useTheme } from "next-themes";
-  
 
 export default function AllQuestionsPage() {
   const { resolvedTheme } = useTheme();
@@ -23,14 +22,55 @@ export default function AllQuestionsPage() {
   const [latestQuestion, setLatestQuestion] = useState<any | null>(null);
   const limit = 5;
 
+  // useEffect(() => {
+  //   async function fetchLatestQuestions() {
+  //     const { data } = await axios.get("/api/question", {
+  //       params: { query: searchQuery, page: currentPage, limit },
+  //     });
+  //       setLatestQuestion(data);
+  //   }
+  //   fetchLatestQuestions();
+  // }, [searchQuery, currentPage]);
+
   useEffect(() => {
-    async function fetchLatestQuestions() {
-      const { data } = await axios.get("/api/question", {
-        params: { query: searchQuery, page: currentPage, limit },
-      });
+    const controller = new AbortController();
+
+    const handler = setTimeout(async () => {
+      try {
+        const { data } = await axios.get("/api/question", {
+          params: {
+            query: searchQuery,
+            page: currentPage,
+            limit,
+          },
+          signal: controller.signal, // 👈 cancel support
+        });
+
         setLatestQuestion(data);
-    }
-    fetchLatestQuestions();
+      } catch (error: any) {
+        if (error.name === "CanceledError") {
+          // Request was cancelled – ignore silently
+          return;
+        }
+        toast.error(error.message || "Something went wrong", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
+        console.error(error);
+      }
+    }, 500); // debounce delay
+
+    return () => {
+      clearTimeout(handler); // cancel debounce
+      controller.abort(); // cancel axios request
+    };
   }, [searchQuery, currentPage]);
 
   const totalPages = Math.ceil(latestQuestion?.total / limit);
