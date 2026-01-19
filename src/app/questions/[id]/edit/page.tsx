@@ -5,9 +5,12 @@ import { useEffect, useState } from "react";
 import { databases } from "@/src/models/client/config";
 import { db, questionCollection } from "@/src/models/name";
 import { Question } from "@/src/app/questions/[id]/[name]/page";
+import { Bounce, ToastContainer } from "react-toastify";
+import { useTheme } from "next-themes";
 
 export default function AskQuestionPage() {
   const param = useParams<{ id: string }>();
+  const { resolvedTheme } = useTheme();
   const [isDataArrived, setIsDataArrived] = useState<boolean>(false);
   const [questionId, setQuestionId] = useState<string>("");
   const [formData, setFormData] = useState<{
@@ -46,6 +49,42 @@ export default function AskQuestionPage() {
   }, [param.id]);
 
   return isDataArrived ? (
-    <QuestionForm pageName={"Edit"} FormData={formData} questionId={questionId} />
-  ) : <QuestionFormSkeleton/>
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={resolvedTheme}
+        transition={Bounce}
+      />
+      <QuestionForm
+        pageName={"Edit"}
+        FormData={formData}
+        questionId={questionId}
+      />
+    </>
+  ) : (
+    <>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme={resolvedTheme}
+        transition={Bounce}
+      />
+      <QuestionFormSkeleton />
+    </>
+  );
 }

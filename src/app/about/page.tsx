@@ -9,12 +9,28 @@ import {
 } from "lucide-react";
 import Header from "@/src/components/Header";
 import Link from "next/link";
+import { Bounce, ToastContainer } from "react-toastify";
+import { useTheme } from "next-themes";
 
 export default function AboutPage() {
+  const { resolvedTheme } = useTheme();
   return (
     <div className="min-h-screen">
       <Header />
       <div className="px-6 py-16 flex flex-col items-center text-center">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={resolvedTheme}
+          transition={Bounce}
+        />
         <div className="max-w-full">
           <h1 className="text-5xl font-bold mb-4 text-gray-900 dark:text-white">
             About Our Community

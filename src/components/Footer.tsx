@@ -85,7 +85,7 @@ const Footer = () => {
           <Link href="/" className="hover:underline">
             Queue Undeflow
           </Link>
-          , Made with ❤️ to resolve doubts.
+          , Made with ❤️ by Soumaditya Roy
         </p>
       </div>
     </footer>

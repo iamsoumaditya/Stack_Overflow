@@ -12,6 +12,8 @@ import { useAuthStore } from "@/src/store/Auth";
 import slugify from "@/src/utils/slugify";
 import { LogIn, LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Bounce, toast } from "react-toastify";
+import { useTheme } from "next-themes";
 
 export const FloatingNav = ({
   navItems,
@@ -24,6 +26,7 @@ export const FloatingNav = ({
   }[];
   className?: string;
   }) => {
+  const {resolvedTheme}=useTheme()
   const { user, logout } = useAuthStore();
   const router = useRouter();
   const { scrollYProgress } = useScroll();
@@ -104,8 +107,22 @@ export const FloatingNav = ({
         {user && (
           <button
             onClick={() => {
-              logout()
-              router.push("/");
+              try {
+                logout()
+                router.push("/");
+              } catch (error:any) {
+                 toast.error(error.message || "Logging out failed", {
+                   position: "top-right",
+                   autoClose: 5000,
+                   hideProgressBar: false,
+                   closeOnClick: false,
+                   pauseOnHover: true,
+                   draggable: true,
+                   progress: undefined,
+                   theme: resolvedTheme === "dark" ? "dark" : "light",
+                   transition: Bounce,
+                 });
+              }
             }}
             className="border text-sm font-medium relative border-neutral-200 dark:border-white/20 text-black dark:text-white px-4 py-2 rounded-full"
           >
