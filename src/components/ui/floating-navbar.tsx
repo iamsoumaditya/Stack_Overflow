@@ -103,11 +103,11 @@ export const FloatingNav = ({
             <span className="absolute inset-x-0 w-1/2 mx-auto -bottom-px bg-linear-to-r from-transparent via-blue-500 to-transparent  h-px" />
           </button>
         )}
-        {user && (
+        {session && user && (
           <button
-            onClick={() => {
+            onClick={async() => {
               try {
-                logout();
+                await logout();
                 router.push("/");
               } catch (error: any) {
                 toast.error(error.message || "Logging out failed", {
