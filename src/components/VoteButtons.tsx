@@ -178,7 +178,11 @@ export function VoteCard({ vote }: { vote: Vote }) {
             Voted on {vote.type}
           </p>
           <Link
-            href={`/questions/${vote?.question?.$id}/${slugify(vote?.question?.title!)}`}
+            href={
+              vote.type === "question"
+                ? `/questions/${vote?.question?.$id}/${slugify(vote?.question?.title!)}`
+                : `/questions/${vote?.question?.$id}/${slugify(vote?.question?.title!)}?answer=${vote.typeId}`
+            }
           >
             <h3 className="text-base font-semibold text-gray-900 dark:text-white hover:text-rose-600 dark:hover:text-rose-400">
               {vote?.question?.title}

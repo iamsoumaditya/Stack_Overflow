@@ -2,6 +2,8 @@ import convertDateToRelativeTime from "@/src/utils/relativeTime";
 import { Models } from "node-appwrite";
 import { userPrefs } from "@/src/store/Auth";
 import { Skeleton } from "@/src/components/ui/skeleton";
+import Link from "next/link";
+import slugify from "../utils/slugify";
 
 export function TopContributers({
   topUser,
@@ -24,7 +26,9 @@ export function TopContributers({
             </div>
             <div className="flex flex-col overflow-hidden">
               <figcaption className="flex flex-row items-center whitespace-pre text-lg font-medium dark:text-white">
-                <span className="text-sm sm:text-lg">{user.name}</span>
+                <Link href={`/users/${user.$id}/${slugify(user.name)}`}>
+                  <span className="text-sm sm:text-lg hover:underline">{user.name}</span>
+                </Link>
                 <span className="mx-1">·</span>
                 <span className="text-xs text-gray-500">
                   {convertDateToRelativeTime(new Date(user.$updatedAt))}

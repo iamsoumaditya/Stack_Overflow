@@ -27,12 +27,12 @@ import {
 import { NumberTicker } from "@/src/components/magicui/number-ticker";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useTheme } from "next-themes";
-
+import { useAuthStore } from "@/src/store/Auth";
 
 const StatCard = ({ number, label }: { number: number; label: string }) => (
   <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 text-center hover:border-rose-300 dark:hover:border-rose-700 transition-all">
     <div className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-      <NumberTicker value={number}/>
+      <NumberTicker value={number} />
     </div>
     <div className="text-gray-600 dark:text-gray-400 text-sm">{label}</div>
   </div>
@@ -40,7 +40,8 @@ const StatCard = ({ number, label }: { number: number; label: string }) => (
 
 export default function UserProfilePage() {
   const param = useParams();
-    const { resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
+  const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<
     "summary" | "questions" | "answers" | "votes" | "comments"
   >("summary");
@@ -60,24 +61,38 @@ export default function UserProfilePage() {
   );
   const [showpassword, setShowPassword] = useState(false);
 
-
   useEffect(() => {
     async function fetchData() {
-      if (param.Id) {
-        const { data } = await axios.get<Data>(`/api/user/${param.Id}`);
-        setQuestion(data.questions);
-        setAnswers(data.answers);
-        setComments(data.comments);
-        setVotes({
-          total: (data.upvotes.total ?? 0) + (data.downvotes.total ?? 0),
-          documents: [
-            ...(data.upvotes.documents ?? []),
-            ...(data.downvotes.documents ?? []),
-          ],
+      try {
+        if (param.Id) {
+          const { data } = await axios.get<Data>(`/api/user/${param.Id}`);
+          setQuestion(data.questions);
+          setAnswers(data.answers);
+          setComments(data.comments);
+          setVotes({
+            total: (data.upvotes.total ?? 0) + (data.downvotes.total ?? 0),
+            documents: [
+              ...(data.upvotes.documents ?? []),
+              ...(data.downvotes.documents ?? []),
+            ],
+          });
+          setAuthor(data.author);
+          setNewName(data.author.name);
+          setNewEmail(data.author.email);
+        }
+      } catch (error: any) {
+        console.log(error);
+        toast.error(error.message || "Unable to get the user", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
         });
-        setAuthor(data.author);
-        setNewName(data.author.name);
-        setNewEmail(data.author.email);
       }
     }
     fetchData();
@@ -110,9 +125,9 @@ export default function UserProfilePage() {
           theme: resolvedTheme === "dark" ? "dark" : "light",
           transition: Bounce,
         });
-      } catch (error:any) {
-        console.log(error)
-        toast.error(error.message ||"Name updation failed", {
+      } catch (error: any) {
+        console.log(error);
+        toast.error(error.message || "Name updation failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -134,7 +149,7 @@ export default function UserProfilePage() {
       } finally {
         setIsEditing(false);
       }
-    }else if (editMode === "email") {
+    } else if (editMode === "email") {
       try {
         await account.updateEmail(newEmail, password);
         toast.success("Email updated successfully!!", {
@@ -155,9 +170,9 @@ export default function UserProfilePage() {
             email: newEmail,
           };
         });
-      } catch (error:any) {
+      } catch (error: any) {
         console.log(error);
-        toast.error(error.message ||"Email updation failed", {
+        toast.error(error.message || "Email updation failed", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -171,7 +186,7 @@ export default function UserProfilePage() {
       } finally {
         setIsEditing(false);
       }
-    }else if (editMode === "password") {
+    } else if (editMode === "password") {
       try {
         await account.updatePassword(newPassword, oldPassword);
         toast.success("Password updated successfully!!", {
@@ -185,8 +200,8 @@ export default function UserProfilePage() {
           theme: resolvedTheme === "dark" ? "dark" : "light",
           transition: Bounce,
         });
-      } catch (error:any) {
-        console.log(error)
+      } catch (error: any) {
+        console.log(error);
         toast.error(error.message || "Password updation failed", {
           position: "top-right",
           autoClose: 5000,
@@ -202,7 +217,6 @@ export default function UserProfilePage() {
         setIsEditing(false);
       }
     }
-
   };
 
   return (
@@ -265,13 +279,15 @@ export default function UserProfilePage() {
                   <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
                 )}
               </div>
-              <button
-                onClick={() => setIsEditing(!isEditing)}
-                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-rose-500 hover:text-rose-500 dark:hover:border-rose-500 dark:hover:text-rose-400 transition-all flex items-center gap-2"
-              >
-                <Edit className="w-4 h-4" />
-                Edit
-              </button>
+              {user && user.$id === param.Id &&
+                <button
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-rose-500 hover:text-rose-500 dark:hover:border-rose-500 dark:hover:text-rose-400 transition-all flex items-center gap-2"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </button>
+              }
             </div>
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">

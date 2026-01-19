@@ -72,7 +72,10 @@ export function AnswerCard({
     setAcceptedId((prev) => (prev === answerId ? "" : answerId));
   };
   return (
-    <div className="py-6 px-4 border rounded-lg border-gray-200 dark:border-gray-800 mb-6">
+    <div
+      id={`answer-${answer.$id}`}
+      className="py-6 px-4 border rounded-lg border-gray-200 dark:border-gray-800 mb-6"
+    >
       <div className="flex gap-4">
         <div className="flex flex-col items-center gap-4 shrink-0">
           <VoteButtons
@@ -374,7 +377,7 @@ export function ProfileAnswerCard({ answer }: { answer: IAnswer }) {
     <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800 hover:border-rose-300 dark:hover:border-rose-700 transition-all cursor-pointer">
       <div className="flex items-start justify-between gap-3 mb-2">
         <Link
-          href={`/questions/${answer.questionId}/${slugify(answer.question?.title!)}`}
+          href={`/questions/${answer.questionId}/${slugify(answer.question?.title!)}?answer=${answer.$id}`}
         >
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-rose-600 dark:hover:text-rose-400">
             {answer.question?.title}

@@ -190,6 +190,7 @@ function CommentSection({
       <div className="space-y-2">
         {comments.documents.map((comment) => (
           <div
+            id={`comment-${comment.$id}`}
             key={comment.$id}
             className="flex gap-3 py-2 border-b border-gray-200 dark:border-gray-800 last:border-0"
           >
@@ -210,8 +211,7 @@ function CommentSection({
                 <span>
                   <Link
                     href={`/users/${comment.authorId}/${slugify(
-                      comment.author.name,
-                    )}`}
+                      comment.author.name)}`}
                     className="hover:underline"
                   >
                     {comment.author.name}
@@ -247,7 +247,7 @@ export function CommentCard({ comment }: { comment: comment }) {
       </div>
       <div className="flex-1">
         <Link
-          href={`/questions/${comment.question?.$id}/${slugify(comment.question?.title!)}`}
+          href={`/questions/${comment.question?.$id}/${slugify(comment.question?.title!)}?comment=${comment.$id}`}
         >
           <p className="text-sm text-gray-700 dark:text-gray-300">
             {comment.content}

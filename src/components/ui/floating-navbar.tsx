@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/src/store/Auth";
 import slugify from "@/src/utils/slugify";
 import { LogIn, LogOut, User } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const FloatingNav = ({
   navItems,
@@ -23,7 +24,8 @@ export const FloatingNav = ({
   }[];
   className?: string;
   }) => {
-  const { user,logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const router = useRouter();
   const { scrollYProgress } = useScroll();
 
   const [visible, setVisible] = useState(true);
@@ -101,7 +103,10 @@ export const FloatingNav = ({
         )}
         {user && (
           <button
-            onClick={logout}
+            onClick={() => {
+              logout()
+              router.push("/");
+            }}
             className="border text-sm font-medium relative border-neutral-200 dark:border-white/20 text-black dark:text-white px-4 py-2 rounded-full"
           >
             <span className="block sm:hidden">{<LogOut />}</span>

@@ -3,7 +3,7 @@ import { MarkdownPreview } from "@/src/components/RTE";
 import { useTheme } from "next-themes";
 import { questionAttachmentBucket } from "@/src/models/name";
 import { storage } from "@/src/models/client/config";
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import { Edit, Trash2 } from "lucide-react";
 import Header from "@/src/components/Header";
 import { useAuthStore } from "@/src/store/Auth";
@@ -55,7 +55,12 @@ interface Data {
   votes: number;
 }
 
-export default function QuestionDetailPage() {
+export default function QuestionDetailPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ answer?: string; comment?:string}>;
+  }) {
+  const params = use(searchParams);
   const { session, user } = useAuthStore();
   const { resolvedTheme } = useTheme();
   const router = useRouter();
@@ -85,6 +90,47 @@ export default function QuestionDetailPage() {
       setQuestion(data.question);
     }
   }, [data]);
+
+  useEffect(() => {
+    if (params.answer) {
+      const timeout = setTimeout(() => {
+        const element = document.getElementById(`answer-${params.answer}`);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          // highlight
+          element.classList.add("ring-2", "ring-rose-500");
+          setTimeout(() => {
+            element.classList.remove("ring-2", "ring-rose-500");
+          }, 2000);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeout);
+    }else if (params.comment) {
+      console.log(params.comment)
+      const timeout = setTimeout(() => {
+        const element = document.getElementById(`comment-${params.comment}`);
+        if (element) {
+          element.scrollIntoView({
+            behavior: "smooth",
+            block: "center",
+          });
+
+          // highlight
+          element.classList.add("ring-2", "ring-rose-500");
+          setTimeout(() => {
+            element.classList.remove("ring-2", "ring-rose-500");
+          }, 2000);
+        }
+      }, 300);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [params.answer,answers,comments,params.comment]);
 
   const deleteQuestion = async () => {
     try {
