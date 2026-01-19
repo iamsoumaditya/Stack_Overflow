@@ -110,6 +110,7 @@ export const FloatingNav = ({
                 await logout();
                 router.push("/");
               } catch (error: any) {
+                console.log(error)
                 toast.error(error.message || "Logging out failed", {
                   position: "top-right",
                   autoClose: 5000,

@@ -24,6 +24,7 @@ import { Models } from "appwrite";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import ConfirmDelete from "@/src/components/ConfirmDelete";
+import { useMounted } from "@/src/hooks/useMounted";
 
 export interface Question extends Models.Document {
   title: string;
@@ -63,6 +64,7 @@ export default function QuestionDetailPage({
   const params = use(searchParams);
   const { session, user } = useAuthStore();
   const { resolvedTheme } = useTheme();
+  const mounted=useMounted()
   const router = useRouter();
   const param = useParams();
   const [data, setData] = useState<Data>();
@@ -161,6 +163,9 @@ export default function QuestionDetailPage({
       });
     }
   };
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen w-full max-w-full px-6 py-12">
@@ -257,29 +262,35 @@ export default function QuestionDetailPage({
           </div>
 
           {/* Main Content */}
-          <div className="flex-1">
-            <div
-              suppressHydrationWarning
-              data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-              className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4"
-            >
-              {question && (
-                <MarkdownPreview
-                  data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-                  source={question.content}
-                />
-              )}
-              {!question && (
-                <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4">
-                  <div className="space-y-3 animate-pulse">
-                    <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-4 w-4/5 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          <div suppressHydrationWarning className="flex-1">
+            {resolvedTheme && (
+              <div
+                suppressHydrationWarning
+                data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
+                className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4"
+              >
+                {question && (
+                  <MarkdownPreview
+                    data-color-mode={
+                      resolvedTheme === "dark" ? "dark" : "light"
+                    }
+                    source={question.content}
+                  />
+                )}
+                {!question && (
+                  <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4">
+                    <div
+                      className="space-y-3 animate-pulse"
+                    >
+                      <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-4 w-4/5 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
             {question && question.attachmentId && (
               <img
                 src={storage.getFileView(
