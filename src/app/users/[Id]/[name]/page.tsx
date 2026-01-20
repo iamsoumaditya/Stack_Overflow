@@ -1,6 +1,6 @@
 "use client";
 import { account } from "@/src/models/client/config";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Edit, Clock, Calendar, Eye, EyeOff, BadgeCheck } from "lucide-react";
 import { useParams } from "next/navigation";
 import axios from "axios";
@@ -72,6 +72,30 @@ export default function UserProfilePage() {
   );
   const [showpassword, setShowPassword] = useState(false);
 const [isSendingVerification, setIsSendingVerification] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const editRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+      if (isEditing && editRef.current) {
+        editRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        editRef.current.focus();
+      }
+    }, [isEditing]);
+  const handleMobileTabClick = (
+    tab:
+      | "summary"
+      | "questions"
+      | "answers"
+      | "votes"
+      | "comments"
+      | "complaints",
+  ) => {
+    setActiveTab(tab);
+    setIsMobileMenuOpen(false);
+  };
+
 
 const handleSendVerification = async() => {
   setIsSendingVerification(true);
@@ -272,7 +296,7 @@ const handleSendVerification = async() => {
     <div className="min-h-screen w-full max-w-full px-6 py-12">
       <div className="max-w-full mx-auto">
         <Header />
-        <div className="flex items-start gap-6 mb-8">
+        <div className="flex flex-col md:flex-row items-start gap-6 mb-8">
           <ToastContainer
             position="top-right"
             autoClose={5000}
@@ -286,108 +310,115 @@ const handleSendVerification = async() => {
             theme={resolvedTheme}
             transition={Bounce}
           />
-          <div className="w-32 h-32 rounded-lg bg-linear-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white text-5xl font-bold shrink-0">
-            {author &&
-              author.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("")}
-          </div>
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 w-full md:w-auto">
+            <div className="w-24 h-24 md:w-32 md:h-32  rounded-lg bg-linear-to-br from-rose-500 to-rose-600 flex items-center justify-center text-white text-5xl font-bold shrink-0">
+              {author &&
+                author.name
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+            </div>
 
-          <div className="flex-1">
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                {author && (
-                  <>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-3">
-                      <span>{author.name}</span>
-                      {author.labels.length === 1 && (
-                        <>
-                          <BadgeCheck
-                            size={20}
-                            color="white"
-                            style={{ fill: "blue" }}
-                          />
-                          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                            {author.labels[0]}
-                          </span>
-                        </>
-                      )}
-                    </h1>
-                  </>
-                )}
-                {!author && (
-                  <div className="h-4 w-48 mb-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                )}
-                {author && (
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {author.email}
-                  </p>
-                )}
-                {!author && (
-                  <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
-                )}
-              </div>
-              {user && user.$id === param.Id && (
-                <div className="flex flex-row gap-3.5" suppressHydrationWarning>
-                  {author && !author.emailVerification && (
-                    <Tooltip>
-                        <TooltipTrigger
-                          onClick={handleSendVerification}
-                          disabled={isSendingVerification}
-                          className="px-4 py-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-semibold border border-amber-200 dark:border-amber-800 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                            />
-                          </svg>
-                          {isSendingVerification
-                            ? "Sending..."
-                            : "Not Verified"}
-                        </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Click to verify</p>
-                      </TooltipContent>
-                    </Tooltip>
+            <div className="flex-1 text-center sm:text-left">
+              {author && (
+                <>
+                  {author.labels.length === 1 && (
+                    <span className="md:hidden inline-flex items-center gap-1 px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold">
+                      <BadgeCheck
+                        size={12}
+                        color="white"
+                        style={{ fill: "blue" }}
+                      />
+                      {author.labels[0]}
+                    </span>
                   )}
-                  <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-rose-500 hover:text-rose-500 dark:hover:border-rose-500 dark:hover:text-rose-400 transition-all flex items-center gap-2"
-                  >
-                    <Edit className="w-4 h-4" />
-                    Edit
-                  </button>
-                </div>
+                  <h1 className="md:text-3xl text-2xl font-bold text-gray-900 dark:text-white mb-1 flex items-center gap-3 justify-center sm:justify-start flex-wrap">
+                    <span>{author.name}</span>
+                    {author.labels.length === 1 && (
+                      <>
+                        <BadgeCheck
+                          size={20}
+                          color="white"
+                          style={{ fill: "blue" }}
+                          className="hidden md:inline-block"
+                        />
+                        <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 hidden md:inline-block">
+                          {author.labels[0]}
+                        </span>
+                      </>
+                    )}
+                  </h1>
+                </>
               )}
-            </div>
+              {!author && (
+                <div className="h-4 w-48 mb-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              )}
+              {author && (
+                <p className="text-gray-600 dark:text-gray-400">
+                  {author.email}
+                </p>
+              )}
+              {!author && (
+                <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+              )}
 
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-4 h-4" />
-                Joined{" "}
-                {author &&
-                  convertDateToRelativeTime(new Date(author.$createdAt))}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                Last activity{" "}
-                {author &&
-                  convertDateToRelativeTime(new Date(author.accessedAt))}
-              </span>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-4 h-4" />
+                  Joined{" "}
+                  {author &&
+                    convertDateToRelativeTime(new Date(author.$createdAt))}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  Last activity{" "}
+                  {author &&
+                    convertDateToRelativeTime(new Date(author.accessedAt))}
+                </span>
+              </div>
             </div>
           </div>
+          {user && user.$id === param.Id && (
+            <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto md:ml-auto">
+              {author && !author.emailVerification && (
+                <Tooltip>
+                  <TooltipTrigger
+                    onClick={handleSendVerification}
+                    disabled={isSendingVerification}
+                    className="w-full sm:w-auto px-4 py-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-semibold border border-amber-200 dark:border-amber-800 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                      />
+                    </svg>
+                    {isSendingVerification ? "Sending..." : "Not Verified"}
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Click to verify</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+              <button
+                onClick={() => setIsEditing(!isEditing)}
+                className="w-full sm:w-auto px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:border-rose-500 hover:text-rose-500 dark:hover:border-rose-500 dark:hover:text-rose-400 transition-all flex items-center gap-2"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </button>
+            </div>
+          )}
         </div>
 
-        <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-800">
+        <div className="hidden md:flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-800">
           <button
             onClick={() => setActiveTab("summary")}
             className={`pb-3 px-2 text-sm font-medium transition-all ${
@@ -450,6 +481,112 @@ const handleSendVerification = async() => {
           </button>
         </div>
 
+        {/* Mobile Navigation - Hamburger Menu */}
+        <div className="md:hidden mb-8">
+          {/* Hamburger Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-gray-200 dark:border-gray-800 bg-transparent text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-all"
+          >
+            <span className="font-semibold capitalize">{activeTab}</span>
+            {isMobileMenuOpen ? (
+              <svg
+                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5 text-gray-600 dark:text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            )}
+          </button>
+
+          {/* Mobile Menu Dropdown */}
+          {isMobileMenuOpen && (
+            <div className="mt-2 p-2 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+              <button
+                onClick={() => handleMobileTabClick("summary")}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  activeTab === "summary"
+                    ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Summary
+              </button>
+              <button
+                onClick={() => handleMobileTabClick("questions")}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  activeTab === "questions"
+                    ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Questions
+              </button>
+              <button
+                onClick={() => handleMobileTabClick("answers")}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  activeTab === "answers"
+                    ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Answers
+              </button>
+              <button
+                onClick={() => handleMobileTabClick("votes")}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  activeTab === "votes"
+                    ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Votes
+              </button>
+              <button
+                onClick={() => handleMobileTabClick("comments")}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  activeTab === "comments"
+                    ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Comments
+              </button>
+              <button
+                onClick={() => handleMobileTabClick("complaints")}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
+                  activeTab === "complaints"
+                    ? "bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 font-semibold"
+                    : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
+                }`}
+              >
+                Complaints
+              </button>
+            </div>
+          )}
+        </div>
+
         <div>
           {activeTab === "summary" && (
             <div>
@@ -463,7 +600,10 @@ const handleSendVerification = async() => {
               </div>
 
               {isEditing && (
-                <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-8">
+                <div
+                  ref={editRef}
+                  className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-8"
+                >
                   <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                     Edit Profile
                   </h2>
