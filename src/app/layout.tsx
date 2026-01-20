@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono,Lato, Fira_Sans } from "next/font/google";
 import "./globals.css";
 import { AnimatedThemeToggler } from "@/src/components/magicui/animated-theme-toggler";
 import { BackgroundBeams } from "@/src/components/ui/background-beams";
@@ -16,6 +16,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const lato = Lato({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-lato",
+});
+
+const firaSans = Fira_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-fira-sans",
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "Queue Underflow",
   description: "Built by Soumaditya Roy",
@@ -29,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${firaSans.className} ${lato.className} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"
