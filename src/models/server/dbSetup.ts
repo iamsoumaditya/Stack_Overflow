@@ -5,6 +5,7 @@ import createVoteCollection from "./vote.collection";
 import { createCommentCollection } from "./comment.collection";
 import { databases } from "./config";
 import { IndexType } from "node-appwrite";
+import createComplaintCollection from "./complaint.collection";
 
 export default async function getOrCreateDB() {
   try {
@@ -20,6 +21,7 @@ export default async function getOrCreateDB() {
         createAnswerCollection(),
         createCommentCollection(),
         createVoteCollection(),
+        createComplaintCollection(),
       ]);
       //  await Promise.all([
       //    databases.createIndex(

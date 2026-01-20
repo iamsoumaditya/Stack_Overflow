@@ -111,6 +111,12 @@ export async function GET(
     ),
   ]);
 
+  answers.documents.sort((a, b) => {
+    if (a.isAccepted !== b.isAccepted) {
+      return a.isAccepted ? -1 : 1;
+    }
+    return (b.totalVotes ?? 0) - (a.totalVotes ?? 0);
+  });
   return NextResponse.json(
     {
       question,

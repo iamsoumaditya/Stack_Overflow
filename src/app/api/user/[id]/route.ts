@@ -5,6 +5,7 @@ import {
   questionCollection,
   commentCollection,
   voteCollection,
+  complaintCollection,
 } from "@/src/models/name";
 import { Query } from "node-appwrite";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,6 +14,7 @@ import { IAnswer } from "@/src/components/Answers";
 import { comment } from "@/src/components/Comments";
 import { Question } from "@/src/app/questions/[id]/[name]/page";
 import { Vote } from "@/src/components/VoteButtons"; 
+import { Complaint } from "@/src/app/users/[Id]/[name]/page";
 export interface Data {
   author: Models.User;
   questions: Models.DocumentList<Question>;
@@ -20,6 +22,7 @@ export interface Data {
   upvotes: Models.DocumentList<Vote>;
   downvotes: Models.DocumentList<Vote>;
   comments: Models.DocumentList<comment>;
+  complaints: Models.DocumentList<Complaint>;
 }
 
 export async function GET(
@@ -30,7 +33,7 @@ export async function GET(
 
   const author = await users.get<Models.User>(id);
 
-  const [questions, answers, upvotes, downvotes, comments] = await Promise.all([
+  const [questions, answers, upvotes, downvotes, comments,complaints] = await Promise.all([
     databases.listDocuments<Models.Document>(db, questionCollection, [
       Query.orderDesc("$updatedAt"),
       Query.equal("authorId", id),
@@ -50,6 +53,10 @@ export async function GET(
       Query.equal("votedById", id),
     ]),
     databases.listDocuments<comment>(db, commentCollection, [
+      Query.orderDesc("$createdAt"),
+      Query.equal("authorId", id),
+    ]),
+    databases.listDocuments<Complaint>(db, complaintCollection, [
       Query.orderDesc("$createdAt"),
       Query.equal("authorId", id),
     ]),
@@ -227,5 +234,6 @@ export async function GET(
     upvotes,
     downvotes,
     comments,
+    complaints
   });
 }

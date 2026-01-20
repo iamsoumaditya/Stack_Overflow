@@ -1,9 +1,10 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import { account } from "@/src/models/client/config";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import { useTheme } from "next-themes";
+import { useAuthStore } from "@/src/store/Auth";
 
 export default function VerifyPage({
   searchParams,
@@ -28,6 +29,9 @@ export default function VerifyPage({
       userId: params.userId,
       secret: params.secret,
     });
+    useAuthStore.setState((prev) => ({
+      user: { ...prev.user, emailVerification: true },
+    }));
     res.then(
       (res: any) => {
         toast.success("Verified successfully!!", {

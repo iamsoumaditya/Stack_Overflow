@@ -1,7 +1,7 @@
 import RTE, { MarkdownPreview } from "@/src/components/RTE";
 import { useTheme } from "next-themes";
-import React, { useState, useEffect } from "react";
-import { Trash2, Check, X } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Trash2, Check, X, Edit } from "lucide-react";
 import { useAuthStore } from "@/src/store/Auth";
 import Link from "next/link";
 import convertDateToRelativeTime from "@/src/utils/relativeTime";
@@ -19,6 +19,8 @@ import slugify from "@/src/utils/slugify";
 import ConfirmDelete from "@/src/components/ConfirmDelete";
 import { Question } from "../app/questions/[id]/[name]/page";
 import { Bounce, ToastContainer, toast } from "react-toastify";
+import { databases } from "../models/client/config";
+import { answerCollection, db } from "../models/name";
 
 export interface IAnswer extends Models.Document {
   questionId: string;
@@ -41,6 +43,9 @@ export function AnswerCard({
   questionAuthorId,
   isAccepted,
   setIsAccepted,
+  setIsEditing,
+  setEditingId,
+  setAnswer,
   acceptedId,
   setAcceptedId,
 }: {
@@ -49,6 +54,9 @@ export function AnswerCard({
   questionAuthorId: string;
   isAccepted: Boolean;
   setIsAccepted: React.Dispatch<React.SetStateAction<boolean>>;
+  setAnswer: React.Dispatch<React.SetStateAction<string>>;
+  setEditingId: React.Dispatch<React.SetStateAction<string>>;
+  setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
   acceptedId: string;
   setAcceptedId: React.Dispatch<React.SetStateAction<string>>;
 }) {
@@ -64,8 +72,30 @@ export function AnswerCard({
     answer.isAccepted = !answer.isAccepted;
     try {
       await axios.patch("/api/answer", { answerId });
-    } catch (error) {
+      toast.success("Answer accepted successfully", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
+    } catch (error: any) {
       console.log(error);
+      toast.error(error.message || "Unable to accept the answer", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: resolvedTheme === "dark" ? "dark" : "light",
+        transition: Bounce,
+      });
       answer.isAccepted = !answer.isAccepted;
       setIsAccepted((prev) => !prev);
     }
@@ -85,15 +115,27 @@ export function AnswerCard({
           />
 
           {user?.$id === answer.authorId && (
-            <ConfirmDelete
-              onConfirm={deleteAnswer}
-              message="Are you sure you want to delete this Answer?"
-              arg={answer.$id}
-            >
-              <button className="p-2 rounded-lg border border-gray-300 dark:border-gray-700  text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500 transition-all">
-                <Trash2 className="w-5 h-5" />
+            <>
+              <button
+                onClick={() => {
+                  setIsEditing(true);
+                  setEditingId(answer.$id);
+                  setAnswer(answer.content);
+                }}
+                className="p-2 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-rose-500 hover:text-rose-500 transition-all"
+              >
+                <Edit className="w-5 h-5" />
               </button>
-            </ConfirmDelete>
+              <ConfirmDelete
+                onConfirm={deleteAnswer}
+                message="Are you sure you want to delete this Answer?"
+                arg={answer.$id}
+              >
+                <button className="p-2 rounded-lg border border-gray-300 dark:border-gray-700  text-gray-600 dark:text-gray-400 hover:border-red-500 hover:text-red-500 transition-all">
+                  <Trash2 className="w-5 h-5" />
+                </button>
+              </ConfirmDelete>
+            </>
           )}
           {!isAccepted && user?.$id === questionAuthorId && (
             <button
@@ -187,7 +229,17 @@ export default function Answer({
   const [allAnswer, setAllAnswers] = useState(answers);
   const [loading, setLoading] = useState(false);
   const [isAccepted, setIsAccepted] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editingId, setEditingId] = useState<string>("");
   const [acceptedId, setAcceptedId] = useState<string>("");
+  const editRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (editRef.current) {
+      editRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      editRef.current.focus();
+    }
+  }, [isEditing]);
 
   useEffect(() => {
     const isAnsAccepted = allAnswer?.documents?.some(
@@ -238,8 +290,33 @@ export default function Answer({
   const handleSubmit = async () => {
     if (!answer || !user) return;
     setLoading(true);
-
     try {
+      if (isEditing) {
+        await databases.updateDocument(db, answerCollection, editingId, {
+          content: answer,
+        });
+        setAllAnswers((prev) => ({
+          ...prev,
+          documents: prev.documents.map((doc) =>
+            doc.$id === editingId ? { ...doc, content: answer } : doc,
+          ),
+        }));
+        setEditingId("");
+        setAnswer("");
+        setIsEditing(false);
+        toast.success("Answer updated successfully!!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+          transition: Bounce,
+        });
+        return;
+      }
       const res = await axios.post("/api/answer", {
         questionId: questionId,
         answer,
@@ -249,6 +326,7 @@ export default function Answer({
       setAllAnswers((prev) => ({
         total: prev.total + 1,
         documents: [
+          ...prev.documents,
           {
             ...res.data,
             author: { ...user, reputation: user.prefs.reputation },
@@ -257,7 +335,6 @@ export default function Answer({
             totalVotes: 0,
             comments: { documents: [], total: 0 },
           },
-          ...prev.documents,
         ],
       }));
 
@@ -323,7 +400,10 @@ export default function Answer({
                 deleteAnswer={deleteAnswer}
                 questionAuthorId={questionAuthorId}
                 isAccepted={isAccepted}
+                setAnswer={setAnswer}
                 setIsAccepted={setIsAccepted}
+                setIsEditing={setIsEditing}
+                setEditingId={setEditingId}
                 acceptedId={acceptedId}
                 setAcceptedId={setAcceptedId}
               />
@@ -336,38 +416,41 @@ export default function Answer({
         </div>
       </div>
 
-      {session && user && user?.$id !== questionAuthorId && !hasAnswered && (
-        <div data-color-mode={resolvedTheme} className="mt-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            Your Answer
-          </h2>
-          <RTE
-            key={resolvedTheme}
-            value={answer}
-            onChange={(val) => setAnswer(val || "")}
-          />
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className={`mt-4 group relative inline-flex items-center justify-center overflow-hidden rounded-lg px-8 py-3 font-semibold text-white transition-all duration-300 ease-out ${
-              loading ? "bg-gray-400 cursor-not-allowed" : ""
-            }}`}
-          >
-            {!loading && (
-              <>
-                <span className="absolute inset-0 bg-linear-to-r from-rose-500 to-rose-600 transition-all duration-300 ease-out group-hover:from-rose-600 group-hover:to-rose-700"></span>
-                <span className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 bg-linear-to-r from-rose-400 to-rose-500 blur-xl"></span>
-              </>
-            )}
-            {!loading && (
-              <span className="relative z-10">Post Your Answer</span>
-            )}
-            {loading && (
-              <span className="relative z-10">Posting Your Answer ....</span>
-            )}
-          </button>
-        </div>
-      )}
+      {session &&
+        user &&
+        user?.$id !== questionAuthorId &&
+        (!hasAnswered || isEditing) && (
+          <div ref={editRef} data-color-mode={resolvedTheme} className="mt-8">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Your Answer
+            </h2>
+            <RTE
+              key={resolvedTheme}
+              value={answer}
+              onChange={(val) => setAnswer(val || "")}
+            />
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className={`mt-4 group relative inline-flex items-center justify-center overflow-hidden rounded-lg px-8 py-3 font-semibold text-white transition-all duration-300 ease-out ${
+                loading ? "bg-gray-400 cursor-not-allowed" : ""
+              }}`}
+            >
+              {!loading && (
+                <>
+                  <span className="absolute inset-0 bg-linear-to-r from-rose-500 to-rose-600 transition-all duration-300 ease-out group-hover:from-rose-600 group-hover:to-rose-700"></span>
+                  <span className="absolute inset-0 opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100 bg-linear-to-r from-rose-400 to-rose-500 blur-xl"></span>
+                </>
+              )}
+              {!loading && (
+                <span className="relative z-10">Post Your Answer</span>
+              )}
+              {loading && (
+                <span className="relative z-10">Posting Your Answer ....</span>
+              )}
+            </button>
+          </div>
+        )}
     </>
   );
 }

@@ -39,6 +39,18 @@ const Footer = () => {
               Profile
             </Link>
           )}
+          <Link
+            href="/faq"
+            className="opacity-80 transition-opacity duration-300 hover:opacity-100"
+          >
+            FAQ
+          </Link>
+          <Link
+            href="/report"
+            className="opacity-80 transition-opacity duration-300 hover:opacity-100"
+          >
+            Report
+          </Link>
         </div>
 
         <div className="flex items-center gap-4">

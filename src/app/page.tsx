@@ -12,16 +12,39 @@ import axios from "axios";
 import { Models } from "node-appwrite";
 import { userPrefs } from "@/src/store/Auth";
 import { useEffect, useState } from "react";
-import {QuestionsCard,QuestionsCardSkeleton} from "@/src/components/QuestionsCard";
-
-
+import {
+  QuestionsCard,
+  QuestionsCardSkeleton,
+} from "@/src/components/QuestionsCard";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import { useTheme } from "next-themes";
 
 export default function Homepage() {
-  const { session } = useAuthStore();
+  const { session, user } = useAuthStore();
+  const { resolvedTheme } = useTheme();
   const [topUser, setTopUser] = useState<Models.UserList<userPrefs> | null>(
-    null
+    null,
   );
-  const [latestQuestion, setLatestQuestion] = useState<any|null>(null);
+  const [latestQuestion, setLatestQuestion] = useState<any | null>(null);
+  useEffect(() => {
+    if (!user || user.emailVerification) return;
+
+    const showVerifyToast = () => {
+      toast.info(
+        "Please verify your email from Profile to unlock all features.",
+        {
+          position: "top-right",
+          autoClose: 8000,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          theme: resolvedTheme === "dark" ? "dark" : "light",
+        },
+      );
+    };
+
+    showVerifyToast();
+  }, [user, resolvedTheme]);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -40,13 +63,26 @@ export default function Homepage() {
     <div className="min-h-screen w-full overflow-x-hidden">
       <Header />
       <div className="px-6 py-16 flex flex-col items-center">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick={false}
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme={resolvedTheme}
+          transition={Bounce}
+        />
         <div className="flex flex-col md:flex-row items-center justify-between w-full max-w-full mb-8">
           <div className="flex-1">
             <h1
               className="text-6xl font-bold mb-4 text-gray-900 dark:text-white"
               style={{ fontFamily: "Comic Sans MS, cursive" }}
             >
-              Queue Overflow
+              Queue Underflow
             </h1>
             <p
               className="text-xl text-gray-600 dark:text-gray-300 mb-8"
