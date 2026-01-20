@@ -76,6 +76,7 @@ const [isSendingVerification, setIsSendingVerification] = useState(false);
 const handleSendVerification = async() => {
   setIsSendingVerification(true);
   try {
+    console.log("url:", `${env.domain}/verify`);
     await account.createVerification({
       url: `${env.domain}/verify`,
     });
