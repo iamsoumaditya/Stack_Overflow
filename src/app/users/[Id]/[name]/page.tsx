@@ -76,6 +76,7 @@ const [isSendingVerification, setIsSendingVerification] = useState(false);
 const handleSendVerification = async() => {
   setIsSendingVerification(true);
   try {
+    console.log(env.domain)
     await account.createVerification({
       url: `${env.domain}/verify`,
     });
@@ -328,11 +329,10 @@ const handleSendVerification = async() => {
                 )}
               </div>
               {user && user.$id === param.Id && (
-                <div className="flex flex-row gap-3.5">
+                <div className="flex flex-row gap-3.5" suppressHydrationWarning>
                   {author && !author.emailVerification && (
                     <Tooltip>
-                      <TooltipTrigger>
-                        <button
+                        <TooltipTrigger
                           onClick={handleSendVerification}
                           disabled={isSendingVerification}
                           className="px-4 py-2 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-semibold border border-amber-200 dark:border-amber-800 hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
@@ -353,11 +353,10 @@ const handleSendVerification = async() => {
                           {isSendingVerification
                             ? "Sending..."
                             : "Not Verified"}
-                        </button>
-                      </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Click to verify</p>
-                        </TooltipContent>
+                        </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to verify</p>
+                      </TooltipContent>
                     </Tooltip>
                   )}
                   <button
