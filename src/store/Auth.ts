@@ -87,9 +87,10 @@ export const useAuthStore = create<IAuthStore>()(
             async logout() {
                 try {
                     await account.deleteSessions()
-                    set({session:null,jwt:null,user:null})
                 } catch (error) {
                     console.log(error)
+                } finally {
+                    set({ session: null, jwt: null, user: null });
                 }
             },
         })),
