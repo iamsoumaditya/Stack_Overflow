@@ -72,17 +72,6 @@ export function AnswerCard({
     answer.isAccepted = !answer.isAccepted;
     try {
       await axios.patch("/api/answer", { answerId });
-      toast.success("Answer accepted successfully", {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: resolvedTheme === "dark" ? "dark" : "light",
-        transition: Bounce,
-      });
     } catch (error: any) {
       console.log(error);
       toast.error(error.message || "Unable to accept the answer", {

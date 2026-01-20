@@ -269,7 +269,7 @@ const handleSendVerification = async() => {
 
   return (
     <div className="min-h-screen w-full max-w-full px-6 py-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-full mx-auto">
         <Header />
         <div className="flex items-start gap-6 mb-8">
           <ToastContainer
