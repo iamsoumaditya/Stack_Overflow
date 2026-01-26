@@ -354,7 +354,7 @@ const handleSendVerification = async() => {
                 <div className="h-4 w-48 mb-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
               )}
               {author && (
-                <p className="text-gray-600 dark:text-gray-400">
+                <p className="text-gray-600 dark:text-gray-400 mb-2">
                   {author.email}
                 </p>
               )}

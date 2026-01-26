@@ -145,7 +145,10 @@ export function AnswerCard({
               </button>
             )}
         </div>
-        <div data-color-mode={resolvedTheme} className="flex-1">
+        <div
+          data-color-mode={resolvedTheme}
+          className="flex-1  overflow-x-auto"
+        >
           {answer.isAccepted && (
             <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-sm font-medium border border-green-200 dark:border-green-800">
               ✓ Accepted Answer
@@ -154,7 +157,7 @@ export function AnswerCard({
 
           <MarkdownPreview source={answer.content} />
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between flex-wrap">
             <AddCommentButton setShowCommentInput={setShowComments} />
 
             <div className="flex items-center gap-2 mb-4">

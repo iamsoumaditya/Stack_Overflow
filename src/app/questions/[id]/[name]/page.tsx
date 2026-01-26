@@ -168,7 +168,7 @@ export default function QuestionDetailPage({
   }
 
   return (
-    <div className="min-h-screen w-full max-w-full px-6 py-12">
+    <div className="min-h-screen w-full px-6 py-12">
       <div className="max-w-full mx-auto">
         <Header />
         <div className="flex items-start justify-between gap-4 my-6">
@@ -185,7 +185,8 @@ export default function QuestionDetailPage({
             theme={resolvedTheme}
             transition={Bounce}
           />
-          <div className="flex-1">
+          
+          <div className="flex-1 min-w-0">
             {question && (
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
                 {question.title}
@@ -207,7 +208,7 @@ export default function QuestionDetailPage({
 
           {session && (
             <Link href="/questions/ask">
-              <ShimmerButton className="shadow-2xl">
+              <ShimmerButton className="shadow-2xl md:block hidden">
                 <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
                   Ask a question
                 </span>
@@ -216,7 +217,7 @@ export default function QuestionDetailPage({
           )}
           {!session && (
             <Link href="/login">
-              <ShimmerButton className="shadow-2xl">
+              <ShimmerButton className="shadow-2xl md:block hidden">
                 <span className="whitespace-pre-wrap text-center text-sm font-medium leading-none tracking-tight text-white dark:from-white dark:to-slate-900/10 lg:text-lg">
                   Ask a question
                 </span>
@@ -262,12 +263,12 @@ export default function QuestionDetailPage({
           </div>
 
           {/* Main Content */}
-          <div suppressHydrationWarning className="flex-1">
+          <div suppressHydrationWarning className="flex-1 min-w-0 w-full">
             {resolvedTheme && (
               <div
                 suppressHydrationWarning
                 data-color-mode={resolvedTheme === "dark" ? "dark" : "light"}
-                className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4"
+                className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4  overflow-x-auto"
               >
                 {question && (
                   <MarkdownPreview
@@ -279,9 +280,7 @@ export default function QuestionDetailPage({
                 )}
                 {!question && (
                   <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 mb-4">
-                    <div
-                      className="space-y-3 animate-pulse"
-                    >
+                    <div className="space-y-3 animate-pulse">
                       <div className="h-4 w-5/6 bg-gray-200 dark:bg-gray-700 rounded"></div>
                       <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
                       <div className="h-4 w-4/5 bg-gray-200 dark:bg-gray-700 rounded"></div>
