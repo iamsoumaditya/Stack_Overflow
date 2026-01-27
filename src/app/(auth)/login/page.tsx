@@ -13,6 +13,7 @@ import env from "@/src/app/env";
 import { Models, OAuthProvider } from "appwrite";
 import { Eye, EyeOff } from "lucide-react";
 import { setupNotifications } from "@/src/utils/notification";
+import axios from "axios";
 
 const BottomGradient = () => {
   return (
@@ -74,14 +75,19 @@ export default function Login() {
       setIsLoading(() => false);
       setError(() => loginResponse.error!.message);
     }
-    setupNotifications(loginResponse.user);
+    await setupNotifications(loginResponse.user);
+    await axios.post("/api/notify", {
+      title: "Welcome Back ‼️ Tiger 🐯 ",
+      body: "Contribute more... earn more reputation & upgrade your badge",
+      userId: loginResponse.user.$id,
+    });
     setIsLoading(() => false);
   };
 
   const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsLoading(true);
     e.preventDefault();
-    account.createOAuth2Session(
+   await account.createOAuth2Session(
       OAuthProvider.Google,
       `${env.domain}/`,
       `${env.domain}/login`,

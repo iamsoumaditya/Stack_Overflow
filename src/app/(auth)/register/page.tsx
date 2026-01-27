@@ -11,6 +11,9 @@ import env from "@/src/app/env";
 import { LoaderOne } from "@/src/components/ui/loader";
 import { Models, OAuthProvider } from "appwrite";
 import { setupNotifications } from "@/src/utils/notification";
+import { messaging } from "@/src/models/server/config";
+import { ID } from "node-appwrite";
+import axios from "axios";
 
 const BottomGradient = () => {
   return (
@@ -85,7 +88,13 @@ function RegisterPage() {
         url: `${env.domain}/verify`,
       });
 
-      setupNotifications(loginResponse.user);
+      await setupNotifications(loginResponse.user)
+
+      await axios.post("/api/notify", {
+        title: "Welcome at Queue Underflow 👋",
+        body: "Welcome Bro! See you in Top Contributors soon. Ask more, resolve doubts.",
+        userId: loginResponse.user.$id,
+      });
     }
     setIsLoading(() => false);
   };

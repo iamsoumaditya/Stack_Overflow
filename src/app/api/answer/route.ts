@@ -1,13 +1,26 @@
-import { answerCollection, commentCollection, db, voteCollection } from "@/src/models/name";
-import { databases, users } from "@/src/models/server/config";
+import {
+  answerCollection,
+  commentCollection,
+  db,
+  questionCollection,
+  voteCollection,
+} from "@/src/models/name";
+import { databases, messaging, users } from "@/src/models/server/config";
 import { userPrefs } from "@/src/store/Auth";
 import { Query } from "appwrite";
+import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 
 export async function POST(request: NextRequest) {
   try {
     const { questionId, answer, authorId } = await request.json();
+
+    const question = await databases.getDocument(
+      db,
+      questionCollection,
+      questionId,
+    );
 
     const response = await databases.createDocument(
       db,
@@ -17,7 +30,15 @@ export async function POST(request: NextRequest) {
         content: answer,
         authorId,
         questionId,
-      }
+      },
+    );
+
+    await messaging.createPush(
+      ID.unique(),
+      "You just got an answer",
+      "Someone just resolved your query checkout & accept if that's right",
+      undefined,
+      [question.authorId],
     );
 
     //increase author reputation
@@ -30,7 +51,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Error occurred while creating answers" },
-      { status: error?.status || error?.code || 500 }
+      { status: error?.status || error?.code || 500 },
     );
   }
 }
@@ -55,10 +76,9 @@ export async function DELETE(request: NextRequest) {
       Query.equal("type", "answer"),
       Query.equal("typeId", answer.$id),
     ]);
-    
+
     let delta = 0;
     for (const v of answerVotes.documents) {
-
       if (v.voteStatus === "upvoted") {
         delta--;
       } else if (v.voteStatus === "downvoted") {
@@ -83,7 +103,7 @@ export async function DELETE(request: NextRequest) {
     const response = await databases.deleteDocument(
       db,
       answerCollection,
-      answerId
+      answerId,
     );
 
     const prefs = await users.getPrefs<userPrefs>(answer.authorId);
@@ -95,12 +115,12 @@ export async function DELETE(request: NextRequest) {
       {
         data: response,
       },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Error occurred while deleting answers" },
-      { status: error?.status || error?.code || 500 }
+      { status: error?.status || error?.code || 500 },
     );
   }
 }
@@ -112,7 +132,7 @@ export async function PATCH(request: NextRequest) {
     const currentAnswer = await databases.getDocument(
       db,
       answerCollection,
-      answerId
+      answerId,
     );
 
     const prefs = await users.getPrefs<userPrefs>(currentAnswer.authorId);
@@ -135,7 +155,7 @@ export async function PATCH(request: NextRequest) {
   } catch (error: any) {
     return NextResponse.json(
       { error: error?.message || "Error occurred while Accepting answers" },
-      { status: error?.status || error?.code || 500 }
+      { status: error?.status || error?.code || 500 },
     );
   }
 }
