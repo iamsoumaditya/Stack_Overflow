@@ -87,6 +87,7 @@ export const useAuthStore = create<IAuthStore>()(
             async logout() {
                 try {
                     await account.deleteSessions()
+                    localStorage.clear()
                 } catch (error) {
                     console.log(error)
                 } finally {

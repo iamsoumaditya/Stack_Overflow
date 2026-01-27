@@ -117,18 +117,18 @@ export default function Homepage() {
       </div>
 
       <div className="px-6 pb-16 w-full max-w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1 rounded-2xl border-2 border-gray-300 dark:border-gray-700 p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
+          <div className="lg:col-span-1 rounded-2xl border-2 border-gray-300 dark:border-gray-700 p-6 order-2 lg:order-1">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Top Contributors
             </h2>
-            <div className="space-y-4 max-h-[600px] overflow-y-auto">
+            <div className="space-y-4 max-h-auto overflow-y-auto">
               {topUser && <TopContributers topUser={topUser} />}
               {!topUser && <TopContributersSkeleton />}
             </div>
           </div>
 
-          <div className="lg:col-span-2 rounded-2xl border-2 border-gray-300 dark:border-gray-700 p-6">
+          <div className="lg:col-span-2 rounded-2xl border-2 border-gray-300 dark:border-gray-700 p-6 order-1 lg:order-2">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Latest Questions
             </h2>

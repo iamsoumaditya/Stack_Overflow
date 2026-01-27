@@ -13,19 +13,27 @@ import {
   questionCollection,
 } from "@/src/models/name";
 import RTE from "@/src/components/RTE";
-import { useTheme} from "next-themes";
+import { useTheme } from "next-themes";
 import confetti from "canvas-confetti";
 
 interface Props {
-  pageName: "Ask"|"Edit";
-  questionId?:string;
-  FormData: {
-    title: string;
-    content: string;
-    tags: Array<string>;
-    attachment?: File | null;
-    attachmentId: string;
-  } | null;
+  pageName: "Ask" | "Edit";
+  questionId?: string;
+  FormData: FormData | null;
+}
+interface FormData {
+  title: string;
+  content: string;
+  tags: Array<string>;
+  attachment?: File | null;
+  attachmentId: string;
+}
+interface formData {
+  title: string;
+  content: string;
+  tags: Set<string>;
+  attachment?: File | null;
+  attachmentId: string;
 }
 const LabelInputContainer = ({
   children,
@@ -41,19 +49,24 @@ const LabelInputContainer = ({
   );
 };
 
-export default function QuestionForm({ pageName, FormData,questionId }: Props) {
+export default function QuestionForm({
+  pageName,
+  FormData,
+  questionId,
+}: Props) {
   const { user } = useAuthStore();
   const router = useRouter();
   const [tag, setTag] = useState("");
-  const [formData, setFormData] = useState({
-    title: FormData?.title ?? "",
-    content: FormData?.content ?? "",
-    tags: new Set(FormData?.tags ?? []),
-    attachment: FormData?.attachment ?? (null as File | null),
-    attchmentId: FormData?.attachmentId ?? "",
+  const [formData, setFormData] = useState<formData>({
+    title: "",
+    content: "",
+    tags: new Set([]),
+    attachment: null as File | null,
+    attachmentId: "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [hydrated, setHydrated] = useState(false);
   const errorRef = useRef<HTMLDivElement | null>(null);
   const { resolvedTheme } = useTheme();
 
@@ -63,6 +76,64 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
       errorRef.current.focus();
     }
   }, [error]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    if (formData?.tags) {
+      const dataToSave = {
+        ...formData,
+        tags: Array.from(formData.tags),
+      };
+      if (pageName === "Edit") {
+        localStorage.setItem(
+          `formData-${questionId}`,
+          JSON.stringify(dataToSave),
+        );
+        return
+      }
+      localStorage.setItem("formData", JSON.stringify(dataToSave));
+    }
+  }, [formData]);
+
+  useEffect(() => {
+    if (pageName === "Edit") {
+      const res = localStorage.getItem(`formData-${questionId}`);
+      let obj: formData = {
+        title: "",
+        content: "",
+        tags: new Set([]),
+        attachment: null as File | null,
+        attachmentId: "",
+      };
+      if (res) {
+        const parsed = JSON.parse(res);
+        obj.title = parsed.title;
+        obj.content = parsed.content;
+        obj.tags = new Set(parsed.tags ?? []);
+        obj.attachment = parsed?.attachment ?? (null as File | null);
+        obj.attachmentId = parsed.attachmentId;
+      } else if (FormData) {
+        obj.title = FormData.title;
+        obj.content = FormData.content;
+        obj.tags = new Set(FormData.tags ?? []);
+        obj.attachment = FormData?.attachment ?? (null as File | null);
+        obj.attachmentId = FormData.attachmentId;
+      }
+
+      setFormData(obj);
+      setHydrated(true);
+      return;
+    }
+    const res = localStorage.getItem("formData");
+    if (res) {
+      const parsed = JSON.parse(res)
+      setFormData({
+        ...parsed,
+        tags: new Set(parsed.tags ?? [])
+      });
+    }
+    setHydrated(true);
+  }, []);
 
   const loadConfetti = (timeInMS = 1000) => {
     const end = Date.now() + timeInMS;
@@ -128,7 +199,7 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
         storageResponse = await storage.createFile(
           questionAttachmentBucket,
           ID.unique(),
-          formData.attachment
+          formData.attachment,
         );
       }
       const response = await databases.createDocument(
@@ -142,15 +213,16 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
           tags: Array.from(formData.tags),
           attachmentId:
             storageResponse !== undefined ? storageResponse.$id : null,
-        }
+        },
       );
 
+      localStorage.removeItem("formData");
       await loadConfetti();
       const wait = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms));
       await wait(3000);
       return response;
-    }
+    };
 
     const update = async () => {
       let storageResponse = undefined;
@@ -158,7 +230,7 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
         storageResponse = await storage.createFile(
           questionAttachmentBucket,
           ID.unique(),
-          formData.attachment
+          formData.attachment,
         );
       }
       const response = await databases.updateDocument(
@@ -171,21 +243,23 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
           authorId: user?.$id,
           tags: Array.from(formData.tags),
           attachmentId:
-            storageResponse !== undefined ? storageResponse.$id : FormData?.attachmentId,
-        }
+            storageResponse !== undefined
+              ? storageResponse.$id
+              : FormData?.attachmentId,
+        },
       );
-
+      localStorage.removeItem(`formData-${questionId}`);
       await loadConfetti();
       const wait = (ms: number) =>
         new Promise((resolve) => setTimeout(resolve, ms));
       await wait(3000);
       return response;
-    }
+    };
 
     try {
       if (pageName === "Ask") {
         const response = await create();
-        router.push(`/questions/${response.$id}/${slugify(response.title)}`)
+        router.push(`/questions/${response.$id}/${slugify(response.title)}`);
       } else {
         const response = await update();
         router.push(`/questions/${response.$id}/${slugify(response.title)}`);
@@ -219,7 +293,7 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
       content: "",
       tags: new Set(),
       attachment: null,
-      attchmentId: "",
+      attachmentId: "",
     });
     setTag("");
     setError("");
@@ -337,7 +411,7 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
             <img
               src={storage.getFileView(
                 questionAttachmentBucket,
-                FormData.attachmentId
+                FormData.attachmentId,
               )}
               className="rounded-lg mb-4"
             />
@@ -457,8 +531,8 @@ export default function QuestionForm({ pageName, FormData,questionId }: Props) {
                     ? "Publishing..."
                     : "Publish Question"
                   : loading
-                  ? "Updating..."
-                  : "Update Question"}
+                    ? "Updating..."
+                    : "Update Question"}
               </span>
             </button>
 
