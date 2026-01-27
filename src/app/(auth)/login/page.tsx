@@ -5,13 +5,14 @@ import { Label } from "@/src/components/ui/label";
 import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
-import { useAuthStore } from "@/src/store/Auth";
+import { useAuthStore, userPrefs } from "@/src/store/Auth";
 import Link from "next/link";
 import { LoaderOne } from "@/src/components/ui/loader";
 import { account } from "@/src/models/client/config";
 import env from "@/src/app/env";
-import { OAuthProvider } from "appwrite";
+import { Models, OAuthProvider } from "appwrite";
 import { Eye, EyeOff } from "lucide-react";
+import { setupNotifications } from "@/src/utils/notification";
 
 const BottomGradient = () => {
   return (
@@ -37,7 +38,7 @@ const LabelInputContainer = ({
 };
 
 export default function Login() {
-  const { login } = useAuthStore();
+  const { login} = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [showpassword, setShowPassword] = React.useState(false);
@@ -56,7 +57,14 @@ export default function Login() {
     setIsLoading(() => true);
     setError(() => "");
 
-    const loginResponse = await login(email.toString(), password.toString());
+    const loginResponse = (await login(
+      email.toString(),
+      password.toString(),
+    )) as {
+      success: boolean;
+      error?: Error | null;
+      user: Models.User<userPrefs>;
+    };
     if (loginResponse.error) {
       if (loginResponse.error?.message.includes("blocked")) {
         setIsLoading(() => false);
@@ -66,7 +74,7 @@ export default function Login() {
       setIsLoading(() => false);
       setError(() => loginResponse.error!.message);
     }
-
+    setupNotifications(loginResponse.user);
     setIsLoading(() => false);
   };
 
@@ -76,7 +84,7 @@ export default function Login() {
     account.createOAuth2Session(
       OAuthProvider.Google,
       `${env.domain}/`,
-      `${env.domain}/login`
+      `${env.domain}/login`,
     );
   };
 

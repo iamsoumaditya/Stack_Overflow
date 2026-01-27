@@ -5,6 +5,7 @@ import { AnimatedThemeToggler } from "@/src/components/magicui/animated-theme-to
 import { BackgroundBeams } from "@/src/components/ui/background-beams";
 import Footer from "@/src/components/Footer";
 import { ThemeProvider } from "next-themes";
+import FCMListener from "../components/Notification";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -58,6 +59,7 @@ export default function RootLayout({
               <AnimatedThemeToggler />
             </div>
             <div className="flex min-h-screen flex-col items-center justify-center py-12">
+              <FCMListener/>
               {children}
             </div>
             <Footer />

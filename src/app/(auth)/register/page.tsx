@@ -4,12 +4,13 @@ import { Label } from "@/src/components/ui/label";
 import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/lib/utils";
 import { IconBrandGoogle } from "@tabler/icons-react";
-import { useAuthStore } from "@/src/store/Auth";
+import { useAuthStore, userPrefs } from "@/src/store/Auth";
 import Link from "next/link";
 import { account } from "@/src/models/client/config";
 import env from "@/src/app/env";
 import { LoaderOne } from "@/src/components/ui/loader";
-import { OAuthProvider } from "appwrite";
+import { Models, OAuthProvider } from "appwrite";
+import { setupNotifications } from "@/src/utils/notification";
 
 const BottomGradient = () => {
   return (
@@ -62,16 +63,20 @@ function RegisterPage() {
     const response = await createAccount(
       `${firstname} ${lastname}`,
       email?.toString(),
-      password?.toString()
+      password?.toString(),
     );
 
     if (response.error) {
       setError(() => response.error!.message);
     } else {
-      const loginResponse = await login(
+      const loginResponse = (await login(
         email?.toString(),
-        password?.toString()
-      );
+        password?.toString(),
+      )) as {
+        success: boolean;
+        error?: Error | null;
+        user: Models.User<userPrefs>;
+      };
 
       if (loginResponse.error) {
         setError(() => loginResponse.error!.message);
@@ -79,6 +84,8 @@ function RegisterPage() {
       await account.createVerification({
         url: `${env.domain}/verify`,
       });
+
+      setupNotifications(loginResponse.user);
     }
     setIsLoading(() => false);
   };
@@ -89,7 +96,7 @@ function RegisterPage() {
     account.createOAuth2Session(
       OAuthProvider.Google,
       `${env.domain}/`,
-      `${env.domain}/login`
+      `${env.domain}/login`,
     );
   };
 
