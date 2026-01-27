@@ -7,7 +7,7 @@ import { account } from "../models/client/config";
 export interface userPrefs {
   reputation: number;
   fcmToken: string;
-  isRegisteredForNotification: false;
+  isRegisteredForNotification: boolean;
 }
 
 interface IAuthStore {
@@ -64,18 +64,16 @@ export const useAuthStore = create<IAuthStore>()(
           ]);
 
           const currentPrefs = user.prefs || {};
-          const updatedPrefs: userPrefs = {
-            ...currentPrefs,
-            reputation: Number(currentPrefs.reputation) ?? 0,
-            isRegisteredForNotification:
-              currentPrefs.isRegisteredForNotification ?? false,
-            fcmToken: currentPrefs.fcmToken ?? "",
-          };
+          if (!currentPrefs.reputation) {
+            currentPrefs.reputation = 0;
+          }
+          currentPrefs.isRegisteredForNotification = false;
+          currentPrefs.fcmToken = "";
 
-          await account.updatePrefs<userPrefs>(updatedPrefs);
+          const res = await account.updatePrefs<userPrefs>(currentPrefs);
 
           set({ session, user, jwt });
-          return { success: true, user: user };
+          return { success: true, user: res };
         } catch (error) {
           console.log(error);
           return {
