@@ -28,10 +28,10 @@ export async function setupNotifications(user: Models.User<userPrefs>) {
       const registration = await navigator.serviceWorker.register(
         "/firebase-messaging-sw.js",
       );
-      console.log("Service Worker registered", registration);
+      //console.log("Service Worker registered", registration);
 
       const readyRegistration = await navigator.serviceWorker.ready;
-      console.log("SW active:", readyRegistration);
+     // console.log("SW active:", readyRegistration);
 
       const messagingFirebase = await getFirebaseMessaging();
       if (!messagingFirebase) return;
@@ -41,7 +41,7 @@ export async function setupNotifications(user: Models.User<userPrefs>) {
         serviceWorkerRegistration: readyRegistration,
       });
 
-      console.log("FCM token: ", token);
+      //console.log("FCM token: ", token);
       if (token && !user.prefs?.isRegisteredForNotification) {
         await registerDevice(token);
         console.log("Device registered with Appwrite for Notification!");

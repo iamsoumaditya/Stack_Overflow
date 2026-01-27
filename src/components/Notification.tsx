@@ -19,10 +19,10 @@ export default function FCMListener() {
       const messaging = await getFirebaseMessaging();
       if (!messaging) return;
 
-      console.log("FCM foreground listener attached");
+     // console.log("FCM foreground listener attached");
 
       unsubscribe = onMessage(messaging, (payload) => {
-        console.log("[FCM FG PAYLOAD]", payload);
+        //console.log("[FCM FG PAYLOAD]", payload);
 
         // ✅ Permission check
         if (Notification.permission !== "granted") {
