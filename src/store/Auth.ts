@@ -62,20 +62,20 @@ export const useAuthStore = create<IAuthStore>()(
             account.get<userPrefs>(),
             account.createJWT(),
           ]);
-          if (!user.prefs?.reputation)
-            await account.updatePrefs<userPrefs>({
-              reputation: 0,
-            });
-          if (user.prefs?.isRegisteredForNotification === undefined)
-            await account.updatePrefs<userPrefs>({
-              isRegisteredForNotification: false,
-            });
-          if (!user.prefs?.fcmToken)
-            await account.updatePrefs<userPrefs>({
-              fcmToken: "",
-            });
+
+          const currentPrefs = user.prefs || {};
+          const updatedPrefs: userPrefs = {
+            ...currentPrefs,
+            reputation: Number(currentPrefs.reputation) ?? 0,
+            isRegisteredForNotification:
+              currentPrefs.isRegisteredForNotification ?? false,
+            fcmToken: currentPrefs.fcmToken ?? "",
+          };
+
+          await account.updatePrefs<userPrefs>(updatedPrefs);
+
           set({ session, user, jwt });
-          return { success: true,user:user };
+          return { success: true, user: user };
         } catch (error) {
           console.log(error);
           return {
