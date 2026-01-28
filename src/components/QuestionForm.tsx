@@ -185,8 +185,8 @@ export default function QuestionForm({
     }
 
     const wordCount = formData.content.trim().split(/\s+/).length;
-    if (wordCount < 20) {
-      setError("Description must be at least 20 words long");
+    if (wordCount < 10) {
+      setError("Description must be at least 10 words long");
       return;
     }
 

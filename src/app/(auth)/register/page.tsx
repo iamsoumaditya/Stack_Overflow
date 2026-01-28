@@ -113,7 +113,7 @@ function RegisterPage() {
         Welcome to Queue Underflow
       </h2>
       <p className="mt-2 max-w-sm text-sm text-neutral-600 dark:text-neutral-300">
-        Signup with Queue Underflow if you you don&apos;t have an account.
+        Signup with Queue Underflow.
         <br /> If you already have an account,{" "}
         <Link href="/login" className="text-rose-400 hover:underline">
           login
