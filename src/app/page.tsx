@@ -47,6 +47,44 @@ export default function Homepage() {
   }, [user, resolvedTheme]);
 
   useEffect(() => {
+    if (!("Notification" in window)) return;
+    const askPermission = async() => {
+      if (Notification.permission === "denied") {
+        toast.info(
+          "You've denied notifications. If you want to enable them, please update your browser site settings.",
+          {
+            position: "top-right",
+            autoClose: 8000,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            theme: resolvedTheme === "dark" ? "dark" : "light",
+          },
+        );
+      }
+
+      if (Notification.permission === "default") {
+        Notification.requestPermission().then(async(permission) => {
+          if (permission === "denied") {
+            toast.info(
+              "You've denied notifications. If you want to enable them, please update your browser site settings.",
+              {
+                position: "top-right",
+                autoClose: 8000,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                theme: resolvedTheme === "dark" ? "dark" : "light",
+              },
+            );
+          }
+        });
+      }
+    };
+    askPermission();
+  }, [resolvedTheme]);
+
+  useEffect(() => {
     async function fetchUsers() {
       const { data } = await axios.get("/api/user/top");
       setTopUser(data);
