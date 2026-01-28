@@ -35,7 +35,11 @@ export const metadata: Metadata = {
   title: "Queue Underflow",
   manifest: "/manifest.json",
   description: "Built by Soumaditya Roy",
-  themeColor: "#ffffff",
+  colorScheme: "light dark",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+  ],
 };
 
 export default function RootLayout({
