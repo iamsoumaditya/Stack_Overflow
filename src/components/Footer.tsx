@@ -6,6 +6,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { useAuthStore } from "@/src/store/Auth";
 import slugify from "@/src/utils/slugify";
 import { Separator } from "@/src/components/ui/separator";
+import InstallPWAButton from "./InstallPWAButton";
 
 const Footer = () => {
   const { user } = useAuthStore();
@@ -86,7 +87,9 @@ const Footer = () => {
           >
             <FaInstagram className="size-5" />
           </a>
+          <InstallPWAButton/>
         </div>
+
       </div>
 
       <Separator />
