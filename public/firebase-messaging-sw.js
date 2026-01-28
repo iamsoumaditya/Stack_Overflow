@@ -16,22 +16,26 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
-  console.log("Background message ", payload);
-
-  self.addEventListener("push", (event) => {
-    const payload = event.data.json();
-
-    event.waitUntil(
-      self.registration.showNotification(payload.notification.title, {
-        body: payload.notification.body,
-        icon: "/favicon.ico",
-      }),
-    );
+  //console.log("Background message ", payload);
+  self.registration.showNotification(payload.notification.title, {
+    body: payload.notification.body,
+    icon: "/favicon.ico",
   });
+});
 
-  self.addEventListener("notificationclick", (event) => {
-    event.notification.close();
+self.addEventListener("push", (event) => {
+  const payload = event.data.json();
 
-    event.waitUntil(clients.openWindow(event.notification.data?.url || "/"));
-  });
+  event.waitUntil(
+    self.registration.showNotification(payload.notification.title, {
+      body: payload.notification.body,
+      icon: "/favicon.ico",
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  event.waitUntil(clients.openWindow(event.notification.data?.url || "/"));
 });
