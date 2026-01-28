@@ -6,6 +6,7 @@ import { BackgroundBeams } from "@/src/components/ui/background-beams";
 import Footer from "@/src/components/Footer";
 import { ThemeProvider } from "next-themes";
 import FCMListener from "../components/Notification";
+import ThemeColorUpdater from "../components/ThemeColorUpdater";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
   title: "Queue Underflow",
   manifest: "/manifest.json",
   description: "Built by Soumaditya Roy",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -52,6 +54,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ThemeColorUpdater/>
           <div className="relative min-h-screen">
             <div className="fixed inset-0 -z-10">
               <BackgroundBeams />

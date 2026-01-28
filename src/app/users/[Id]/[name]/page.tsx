@@ -699,7 +699,7 @@ const handleSendVerification = async() => {
                               type={showpassword ? "text" : "password"}
                               value={password}
                               onChange={(e) => setPassword(e.target.value)}
-                              placeholder="Enter your current password to confirm"
+                              placeholder="Enter your current password"
                               className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-rose-500 dark:focus:ring-rose-600 transition-all"
                             />
                             <button
