@@ -59,12 +59,12 @@ interface Data {
 export default function QuestionDetailPage({
   searchParams,
 }: {
-  searchParams: Promise<{ answer?: string; comment?:string}>;
-  }) {
+  searchParams: Promise<{ answer?: string; comment?: string }>;
+}) {
   const params = use(searchParams);
   const { session, user } = useAuthStore();
   const { resolvedTheme } = useTheme();
-  const mounted=useMounted()
+  const mounted = useMounted();
   const router = useRouter();
   const param = useParams();
   const [data, setData] = useState<Data>();
@@ -112,8 +112,8 @@ export default function QuestionDetailPage({
       }, 300);
 
       return () => clearTimeout(timeout);
-    }else if (params.comment) {
-      console.log(params.comment)
+    } else if (params.comment) {
+      console.log(params.comment);
       const timeout = setTimeout(() => {
         const element = document.getElementById(`comment-${params.comment}`);
         if (element) {
@@ -132,7 +132,7 @@ export default function QuestionDetailPage({
 
       return () => clearTimeout(timeout);
     }
-  }, [params.answer,answers,comments,params.comment]);
+  }, [params.answer, answers, comments, params.comment]);
 
   const deleteQuestion = async () => {
     try {
@@ -185,7 +185,7 @@ export default function QuestionDetailPage({
             theme={resolvedTheme}
             transition={Bounce}
           />
-          
+
           <div className="flex-1 min-w-0">
             {question && (
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
@@ -364,38 +364,36 @@ export default function QuestionDetailPage({
             {comments && comments?.total > 0 && (
               <CommentSection setComments={setComments} comments={comments} />
             )}
-
-            <hr className="my-6 border-gray-200 dark:border-gray-800" />
-
-            {question && answers ? (
-              <Answer
-                answers={answers}
-                questionId={question.$id}
-                questionAuthorId={question.authorId}
-              />
-            ) : (
-              <div className="space-y-4 animate-pulse">
-                <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                  <div className="h-4 w-1/3 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                </div>
-
-                <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                  <div className="h-4 w-2/5 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                </div>
-
-                <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
-                  <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
-                  <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                </div>
-              </div>
-            )}
           </div>
         </div>
+        <hr className="my-6 border-gray-200 dark:border-gray-800" />
+        {question && answers ? (
+          <Answer
+            answers={answers}
+            questionId={question.$id}
+            questionAuthorId={question.authorId}
+          />
+        ) : (
+          <div className="space-y-4 animate-pulse">
+            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+              <div className="h-4 w-1/3 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+
+            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+              <div className="h-4 w-2/5 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+
+            <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-800">
+              <div className="h-4 w-1/4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 w-2/3 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+              <div className="h-4 w-1/2 bg-gray-200 dark:bg-gray-700 rounded"></div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
