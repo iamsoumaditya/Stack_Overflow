@@ -362,15 +362,15 @@ const handleSendVerification = async() => {
                 <div className="h-4 w-64 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
               )}
 
-              <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 justify-center">
                 <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
+                  <Calendar className="w-3 sm:w-4 h-4" />
                   Joined{" "}
                   {author &&
                     convertDateToRelativeTime(new Date(author.$createdAt))}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
+                  <Clock className="w-3 sm:w-4 h-4" />
                   Last activity{" "}
                   {author &&
                     convertDateToRelativeTime(new Date(author.accessedAt))}

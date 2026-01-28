@@ -135,7 +135,13 @@ NEXT_PUBLIC_APPWRITE_PROJECT_ID=your-appwrite-project-id
 NEXT_PUBLIC_APPWRITE_PROJECT_NAME =your-appwrite-project-name
 APPWRITE_API_KEY=your-appwrite-api-key
 NEXT_PUBLIC_PROJECT_DOMAIN=http://localhost:3000 # for dev server
-
+# for notification
+NEXT_PUBLIC_FIREBASE_VAPID_KEY=you-firebase-vapid-key
+NEXT_PUBLIC_FIREBASE_API_KEY=you-firebase-api-key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=you-firebase-auth-domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=you-firebase-project-id
+NEXT_PUBLIC_FIREBASE_SENDER_ID=you-firebase-sender-id
+NEXT_PUBLIC_FIREBASE_APP_ID=you-firebase-app-id
 ```
 ### 4️⃣ Run the Development Server
 
