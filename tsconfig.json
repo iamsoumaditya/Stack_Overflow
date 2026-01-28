@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-, "src/models/server/storageSetupts"  ],
+, "src/models/server/storageSetupts", "next.config.js"  ],
   "exclude": ["node_modules"]
 }

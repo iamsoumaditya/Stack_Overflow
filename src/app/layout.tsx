@@ -32,6 +32,7 @@ const firaSans = Fira_Sans({
 
 export const metadata: Metadata = {
   title: "Queue Underflow",
+  manifest: "/manifest.json",
   description: "Built by Soumaditya Roy",
 };
 
