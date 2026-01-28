@@ -47,7 +47,7 @@ export default function InstallPWAButton() {
   return (
     <button
       onClick={installApp}
-      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-black text-white hover:bg-neutral-800 transition"
+      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80 transition"
     >
       {/* Play Store Icon */}
       <svg
