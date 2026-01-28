@@ -87,9 +87,9 @@ export default function Login() {
   const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsLoading(true);
     e.preventDefault();
-   await account.createOAuth2Session(
+    account.createOAuth2Session(
       OAuthProvider.Google,
-      `${env.domain}/`,
+      `${env.domain}/OAuth`,
       `${env.domain}/login`,
     );
   };

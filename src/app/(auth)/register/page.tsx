@@ -11,8 +11,6 @@ import env from "@/src/app/env";
 import { LoaderOne } from "@/src/components/ui/loader";
 import { Models, OAuthProvider } from "appwrite";
 import { setupNotifications } from "@/src/utils/notification";
-import { messaging } from "@/src/models/server/config";
-import { ID } from "node-appwrite";
 import axios from "axios";
 
 const BottomGradient = () => {
@@ -102,9 +100,9 @@ function RegisterPage() {
   const handleGoogleLogin = async (e: React.MouseEvent<HTMLButtonElement>) => {
     setIsLoading(true);
     e.preventDefault();
-    account.createOAuth2Session(
+     account.createOAuth2Session(
       OAuthProvider.Google,
-      `${env.domain}/`,
+      `${env.domain}/OAuth`,
       `${env.domain}/login`,
     );
   };

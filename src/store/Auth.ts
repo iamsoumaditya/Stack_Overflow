@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { persist } from "zustand/middleware";
-import { AppwriteException, ID, Models } from "appwrite";
+import { AppwriteException, ID, Models, OAuthProvider } from "appwrite";
 import { account } from "../models/client/config";
-
+import env from "@/src/app/env";
 export interface userPrefs {
   reputation: number;
   fcmToken: string;
@@ -22,6 +22,7 @@ interface IAuthStore {
     email: string,
     password: string,
   ): Promise<{ success: boolean; error?: AppwriteException | null }>;
+  googleLogin(): Promise<{ success: boolean; user?:Models.User<userPrefs>; error?: AppwriteException | null }>;
   createAccount(
     name: string,
     email: string,
@@ -73,6 +74,33 @@ export const useAuthStore = create<IAuthStore>()(
           });
 
           set({ session, user, jwt });
+          return { success: true, user: res };
+        } catch (error) {
+          console.log(error);
+          return {
+            success: false,
+            error: error instanceof AppwriteException ? error : null,
+          };
+        }
+      },
+      async googleLogin() {
+        try {
+          const [user,session, { jwt }] = await Promise.all([
+            account.get<userPrefs>(),
+            account.getSession("current"),
+            account.createJWT(),
+          ]);
+
+          const currentPrefs = user.prefs ?? {};
+
+          const res = await account.updatePrefs<userPrefs>({
+            ...currentPrefs,
+            reputation: currentPrefs.reputation ?? 0,
+            isRegisteredForNotification: false,
+            fcmToken: "",
+          });
+
+          set({session, user, jwt });
           return { success: true, user: res };
         } catch (error) {
           console.log(error);
