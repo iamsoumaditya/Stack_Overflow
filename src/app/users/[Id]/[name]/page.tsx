@@ -71,7 +71,7 @@ export default function UserProfilePage() {
     "name",
   );
   const [showpassword, setShowPassword] = useState(false);
-const [isSendingVerification, setIsSendingVerification] = useState(false);
+  const [isSendingVerification, setIsSendingVerification] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const editRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {

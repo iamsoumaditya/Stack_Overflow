@@ -8,7 +8,6 @@ import {
 import { databases, messaging, users } from "@/src/models/server/config";
 import { userPrefs } from "@/src/store/Auth";
 import { Query } from "appwrite";
-import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { ID } from "node-appwrite";
 
